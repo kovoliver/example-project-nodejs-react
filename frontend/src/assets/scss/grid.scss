@@ -1,0 +1,22 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+@for $i from 1 through 12 {
+    [class*="col-"] {
+        width: 100%;
+    }
+}
+
+// Mobil-first: legkisebbtől a legnagyobb breakpointig
+@each $name, $size in $breakpoints {
+    @media (min-width: $size) {
+        @for $i from 1 through 12 {
+            .col-#{$name}-#{$i} {
+                width: calc(100% / 12 * #{$i});
+            }
+        }
+    }
+}

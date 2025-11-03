@@ -1,0 +1,4 @@
+@include list-classes("jc", "justify-content", $justifyContent);
+@include list-classes("ai", "align-items", $alignItems);
+@include list-classes("fd", "flex-direction", $flexDirections);
+@include list-classes("fw", "flex-wrap", $flexWraps);

@@ -1,0 +1,118 @@
+========================
+PRISMA CHEAT SHEET
+========================
+
+1️⃣ Telepítés
+-------------
+npm install @prisma/client
+npm install -D prisma
+npx prisma init         # Létrehozza a prisma/ mappát és .env fájlt
+
+.env
+------
+DATABASE_URL="mysql://user:password@localhost:3306/dbname"
+
+prisma/schema.prisma
+-------------------
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+-------------------
+
+2️⃣ Adatbázis migráció
+----------------------
+npx prisma migrate dev --name init
+    # Alkalmazza a változtatásokat az adatbázisra és generál migrációt
+npx prisma migrate reset
+    # Teljes reset: törli az adatokat, újra létrehozza a sémát, futtatja a seed-et
+npx prisma migrate status
+    # Mutatja a migrációs státuszt
+
+-------------------
+
+3️⃣ Prisma Client generálás
+--------------------------
+npx prisma generate
+    # Frissíti a TypeScript típusokat a client-ben
+
+-------------------
+
+4️⃣ Adatbázis lekérdezések (NodeJS / TypeScript)
+------------------------------------------------
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+// Find
+const users = await prisma.user.findMany();
+const user = await prisma.user.findUnique({ where: { userID: 1 } });
+
+// Create
+const newUser = await prisma.user.create({
+  data: {
+    email: "teszt@example.com",
+    pass: "hashedpassword",
+    role: "USER"
+  }
+});
+
+// Update
+const updatedUser = await prisma.user.update({
+  where: { userID: 1 },
+  data: { pass: "ujhash" }
+});
+
+// Delete
+const deletedUser = await prisma.user.delete({
+  where: { userID: 1 }
+});
+
+// Complex queries
+const cars = await prisma.car.findMany({
+  where: { make: "Toyota" },
+  include: { owner: true, images: true }
+});
+
+-------------------
+
+5️⃣ Prisma Studio
+----------------
+npx prisma studio
+    # Webes GUI az adatbázis gyors böngészéséhez
+
+-------------------
+
+6️⃣ Adatellenőrzés
+-----------------
+npx prisma validate
+    # Ellenőrzi a schema.prisma szintaxisát és helyességét
+
+-------------------
+
+7️⃣ Seed (opcionális)
+--------------------
+# prisma/seed.ts
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+async function main() {
+    await prisma.user.create({ data: { email: "admin@admin.com", pass: "hash", role: "ADMIN" } });
+}
+
+main().catch(e => console.error(e)).finally(() => prisma.$disconnect());
+
+# Futtatás reset után
+npx prisma db seed
+
+-------------------
+
+8️⃣ További parancsok
+--------------------
+npx prisma -h                  # Súgó
+npx prisma format              # Formázza a schema.prisma-t
+npx prisma migrate resolve     # Migráció státusz kézi beállítása

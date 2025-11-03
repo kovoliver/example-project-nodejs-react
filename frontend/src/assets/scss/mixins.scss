@@ -1,0 +1,55 @@
+@use "sass:math";
+
+@mixin map-classes($base-class, $property, $map) {
+    @each $key, $value in $map {
+        .#{$base-class}-#{$key} {
+            #{$property}: $value !important;
+        }
+    }
+}
+
+@mixin list-classes($base-class, $property, $list) {
+    @each $item in $list {
+        .#{$base-class}-#{$item} {
+            #{$property}: $item !important;
+        }
+    }
+}
+
+@mixin create-spacings($base-class, $property, $map) {
+    @each $key, $value in $map {
+        $vw: math.div($value, map-get($breakpoints, "xl")) * 100;
+
+        .#{$base-class}-#{$key} {
+            #{$property}: max($value, #{$vw}vw) !important;
+        }
+    }
+}
+
+@mixin loop-classes($base-class, $property, $from, $to, $step, $unit) {
+    @while($from <=$to) {
+        .#{$base-class}-#{$from} {
+            #{$property}:#{$from}#{$unit} !important;
+        }
+
+        $from: $from+$step;
+    }
+}
+
+@mixin map-background-classes($base-class, $map, $transparency: 0) {
+    @each $key, $value in $map {
+        $rgba-value: rgba($value, $transparency);
+
+        .#{$base-class}-#{$key}-#{$transparency*100} {
+            background-color: $rgba-value !important;
+        }
+    }
+}
+
+@mixin pseudo-classes($clsName, $property, $map, $pseudo) {
+    @each $key, $value in $map {
+        .#{$clsName}-#{$key}-#{$pseudo}:#{$pseudo} {
+            #{$property}: $value !important;
+        }
+    }
+}

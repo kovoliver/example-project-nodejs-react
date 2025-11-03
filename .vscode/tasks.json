@@ -1,0 +1,64 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start backend server",
+            "type": "shell",
+            "command": "nodemon index",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build backend",
+            "type": "shell",
+            "command": "npm run build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start frontend",
+            "type": "shell",
+            "command": "npm start",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run All",
+            "dependsOn": [
+                "Start backend server",
+                "Build backend",
+                "Start frontend"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        }
+    ]
+}

@@ -1,0 +1,81 @@
+$colors: (
+    "primary": #2a76a9,
+    "primary-lighter": #338cc7,
+    "primary-darker": #23638d,
+    "secondary": #2ecc71,
+    "secondary-lighter": #33e57d,
+    "secondary-darker": #26a55b,
+    "danger": #e74c3c,
+    "warning": #f1c40f,
+    "ultra-light":#efefefef,
+    "light":#e2e2e2ef,
+    "mid":#b4b4b4ef,
+    "dark-mid":#8a8a8aef,
+    "dark":#323232ef,
+);
+
+$breakpoints: (
+  "xs": 480px,
+  "sm": 768px,
+  "md": 1024px,
+  "lg": 1280px,
+  "xl": 1536px,
+);
+
+$spacing: (
+  "none":0px,
+  "xs": 4px,
+  "sm": 8px,
+  "md": 16px,
+  "lg": 24px,
+  "xl": 32px,
+);
+
+$font-sizes: (
+  "sm": 0.875rem,
+  "base": 1rem,
+  "lg": 1.125rem,
+  "xl": 1.25rem,
+  "2xl": 1.5rem,
+);
+
+$radiuses: (
+  "none": 0,
+  "sm": 2px,
+  "md": 4px,
+  "lg": 8px,
+  "full": 9999px,
+);
+
+$shadows: (
+  "sm": 0 1px 2px rgba(0, 0, 0, 0.05),
+  "md": 0 4px 6px rgba(0, 0, 0, 0.1),
+  "lg": 0 10px 15px rgba(0, 0, 0, 0.15),
+);
+
+$z-indexes: (
+  "modal": 999,
+  "dropdown": 100,
+  "nav": 50,
+  "default": 1,
+  "background": -1,
+);
+
+$transitions: (
+  "fast": 0.15s,
+  "normal": 0.3s,
+  "slow": 0.6s,
+);
+
+$displays:block, inline, inline-block, grid, flex, none, table, table-cell;
+$textAligns:left, right, center, justify;
+$justifyContent:start, end, center, space-between, space-around, space-evenly;
+$alignItems:start, end, center;
+$flexDirections:row, row-reverse, column, column-reverse;
+$flexWraps:wrap, nowrap, wrap-reverse;
+$positions:static, relative, absolute, fixed, sticky;
+
+$cursors: pointer, default, wait, text, move, not-allowed, crosshair, progress, 
+e-resize, ne-resize, nw-resize, n-resize, se-resize, sw-resize, s-resize, w-resize, 
+ew-resize, ns-resize, nesw-resize, nwse-resize, cell, vertical-text, alias, 
+context-menu, help, no-drop, grab, grabbing;

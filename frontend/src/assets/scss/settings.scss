@@ -1,0 +1,82 @@
+@import "./variables";
+@import "./mixins";
+
+@include map-classes("text", "color", $colors);
+@include map-classes("bg", "background-color", $colors);
+
+@for $i from 1 through 9 {
+    $transparency: $i / 10;
+    @include map-background-classes('bgt', $colors, $transparency);
+}
+
+@include create-spacings("m", "margin", $spacing);
+@include create-spacings("mt", "margin-top", $spacing);
+@include create-spacings("mb", "margin-bottom", $spacing);
+@include create-spacings("ml", "margin-left", $spacing);
+@include create-spacings("mr", "margin-right", $spacing);
+@include create-spacings("mx", "margin-inline", $spacing);
+@include create-spacings("my", "margin-block", $spacing);
+
+@include create-spacings("p", "padding", $spacing);
+@include create-spacings("pt", "padding-top", $spacing);
+@include create-spacings("pb", "padding-bottom", $spacing);
+@include create-spacings("pl", "padding-left", $spacing);
+@include create-spacings("pr", "padding-right", $spacing);
+@include create-spacings("px", "padding-inline", $spacing);
+@include create-spacings("py", "padding-block", $spacing);
+@include map-classes("text", "font-size", $font-sizes);
+@include list-classes("d", "display", $displays);
+@include list-classes("pos", "position", $positions);
+@include list-classes("cursor", "cursor", $cursors);
+@include map-classes("radius", "border-radius", $radiuses);
+@include map-classes("shadow", "box-shadow", $shadows);
+@include map-classes("z", "z-index", $z-indexes);
+@include map-classes("transition", "transition-duration", $transitions);
+
+@include loop-classes("maxw", max-width, 5, 1000, 5, px);
+@include loop-classes("maxh", max-height, 5, 1000, 5, px);
+@include loop-classes("wp", width, 5, 100, 5, '%');
+@include loop-classes("hp", height, 5, 100, 5, '%');
+@include loop-classes("w", width, 5, 1000, 5, px);
+@include loop-classes("h", height, 5, 1000, 5, px);
+@include loop-classes("minw", min-width, 5, 500, 5, px);
+@include loop-classes("minh", min-height, 5, 1000, 5, px);
+@include loop-classes("minwp", min-width, 5, 100, 5, "%");
+@include loop-classes("maxwp", max-width, 5, 100, 5, "%");
+
+@include pseudo-classes("color", "color", $colors, "hover");
+@include pseudo-classes("color", "color", $colors, "active");
+@include pseudo-classes("color", "color", $colors, "focus");
+
+@include pseudo-classes("bg", "background-color", $colors, "hover");
+@include pseudo-classes("bg", "background-color", $colors, "active");
+@include pseudo-classes("bg", "background-color", $colors, "focus");
+
+@each $key, $value in $breakpoints {
+    .container-#{$key} {
+        width: 100%;
+        max-width: $value;
+        margin-left: auto;
+        margin-right: auto;
+
+        /* Media query: amikor a viewport szélessége eléri a breakpointot */
+        @media (max-width: $value) {
+            // Ha van kisebb breakpoint, akkor azt használjuk, egyébként 100%
+            $next: null;
+
+            @each $k, $v in $breakpoints {
+                @if $v < $value and ($next ==null or $v > $next) {
+                    $next: $v;
+                }
+            }
+
+            @if $next !=null {
+                max-width: $next;
+            }
+
+            @else {
+                max-width: 100%;
+            }
+        }
+    }
+}

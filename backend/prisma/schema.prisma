@@ -1,0 +1,158 @@
+// -----------------------------
+// Datasource & Generator
+// -----------------------------
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -----------------------------
+// Enums
+// -----------------------------
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Title {
+  MR
+  MS
+  MRS
+  DR
+}
+
+enum StreetType {
+  STREET
+  AVENUE
+  ROAD
+  BLVD
+}
+
+enum ReportType {
+  USER
+  CAR
+}
+
+// -----------------------------
+// Models
+// -----------------------------
+
+model User {
+  userID       Int                 @id @default(autoincrement())
+  role         Role                @default(USER)
+  email        String              @unique
+  pass         String
+  title        Title?
+  firstName    String?
+  lastName     String?
+  zip          String?
+  settlement   String?
+  street       String?
+  streetType   StreetType?
+  houseNumber  String?
+  floorNumber  String?
+  doorNumber   String?
+  confirmationCode String?
+  salt String?
+  userConfirmed Boolean
+  created      DateTime            @default(now())
+  updated      DateTime            @updatedAt
+
+  // Relations
+  cars                   Car[]                 @relation("OwnerCars")
+  conversationsInitiated UserConversation[]    @relation("Initiator")
+  conversationsReceived  UserConversation[]    @relation("Receiver")
+  messagesSent           UserMessage[]         @relation("Sender")
+  reportsMade            Report[]              @relation("Reporter")
+  twoFactorKeyCreated TwoFactorKey[] @relation("UserKey")
+  @@map("users")
+}
+
+model Car {
+  carID       Int           @id @default(autoincrement())
+  userID      Int
+  title       String?
+  make        String
+  model       String
+  description String?
+  created     DateTime      @default(now())
+  updated     DateTime      @updatedAt
+
+  // Relations
+  owner       User          @relation("OwnerCars", fields: [userID], references: [userID], onDelete: Cascade)
+  images      CarImage[]
+  messages    UserMessage[] @relation("CarMessages")
+  reports     Report[]
+
+  @@map("cars")
+}
+
+model CarImage {
+  imageID   Int      @id @default(autoincrement())
+  carID     Int
+  path      String?
+  extension String?
+  created   DateTime @default(now())
+
+  car       Car      @relation(fields: [carID], references: [carID], onDelete: Cascade)
+
+  @@map("car_images")
+}
+
+model UserConversation {
+  conversationID Int      @id @default(autoincrement())
+  initiator      Int
+  receiver       Int
+  created        DateTime @default(now())
+
+  initiatorUser  User     @relation("Initiator", fields: [initiator], references: [userID], onDelete: Cascade)
+  receiverUser   User     @relation("Receiver", fields: [receiver], references: [userID], onDelete: Cascade)
+  messages       UserMessage[]
+
+  @@map("user_conversations")
+}
+
+model UserMessage {
+  messageID      Int      @id @default(autoincrement())
+  conversationID Int
+  senderID       Int
+  carID          Int?     // kapcsolódhat autóhoz
+  message        String?
+  created        DateTime @default(now())
+  updated        DateTime @updatedAt
+
+  conversation   UserConversation @relation(fields: [conversationID], references: [conversationID], onDelete: Cascade)
+  sender         User             @relation("Sender", fields: [senderID], references: [userID], onDelete: Restrict)
+  car            Car?             @relation("CarMessages", fields: [carID], references: [carID], onDelete: Cascade)
+
+  @@map("user_messages")
+}
+
+model Report {
+  reportID   Int        @id @default(autoincrement())
+  repoterID  Int?
+  carID      Int
+  reportType ReportType
+  message    String?
+  created    DateTime   @default(now())
+  updated    DateTime   @updatedAt
+
+  reporter   User?      @relation("Reporter", fields: [repoterID], references: [userID], onDelete: SetNull)
+  car        Car        @relation(fields: [carID], references: [carID], onDelete: Cascade)
+
+  @@map("reports")
+}
+
+model TwoFactorKey {
+  keyID Int @id @default(autoincrement())
+  userID Int
+  key String
+  issuedAt DateTime @default(now())
+  expiredAt  DateTime @default(dbgenerated("(CURRENT_TIMESTAMP + INTERVAL 5 MINUTE)"))
+  userKey   User?      @relation("UserKey", fields: [userID], references: [userID], onDelete: Cascade)
+  @@map("two_factor_keys")
+}
