@@ -1,15 +1,25 @@
 import Joi from "joi";
 import { Role, Title, StreetType, ReportType } from "../models/types.js";
 export const userSchema = Joi.object({
-    email: Joi.string().email().required().messages({
+    email: Joi.string().email().empty("").required().messages({
         "string.base": "Az email címnek szöveg típusúnak kell lennie!",
         "string.email": "Az email cím formátuma nem megfelelő!",
-        "any.required": "Az email cím megadása kötelező!"
+        "any.required": "Az email cím megadása kötelező!",
+        "any.empty": "Az email cím mező nem maradhat üres!"
     }),
     pass: Joi.string().min(6).required().messages({
         "string.base": "A jelszónak szöveg típusúnak kell lennie!",
         "string.min": "A jelszónak legalább 6 karakter hosszúnak kell lennie!",
         "any.required": "A jelszó megadása kötelező!"
+    }),
+    passAgain: Joi.string()
+        .valid(Joi.ref("pass"))
+        .required()
+        .empty("")
+        .messages({
+        "any.only": "A két jelszó nem egyezik meg!",
+        "string.empty": "Kérjük ismételje meg a jelszót.",
+        "any.required": "Kérjük ismételje meg a jelszót.",
     })
 });
 export const profileSchema = Joi.object({

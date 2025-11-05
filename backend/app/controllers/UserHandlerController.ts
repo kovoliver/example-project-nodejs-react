@@ -17,6 +17,8 @@ class UserHandlerController extends Controller {
     private async register(req: any, res: any) {
         try {
             const { error, value } = this.schema.validate(req.body, { abortEarly: false });
+
+            delete value.passAgain;
             
             if (error) {
                 return res.status(400).json({

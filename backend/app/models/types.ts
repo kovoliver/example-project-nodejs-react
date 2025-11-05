@@ -32,6 +32,7 @@ export type RegisterUser = {
     email: string;
     pass: string;
     salt:string;
+    confirmationCode:string;
 };
 
 export type User = {
@@ -126,3 +127,11 @@ export type TokenPayload = {
     role: Role;
     email: string;
 };
+
+export type MailOptions = {
+    from: string;
+    to: string;
+    subject: string;
+    text?: string;
+    html?: string;
+}

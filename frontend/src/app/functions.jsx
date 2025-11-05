@@ -62,8 +62,9 @@ export const fetchAPI = async (path, settings = {}) => {
     }
 };
 
-const validateField = (name, value, fieldSchema) => {
-    const { error } = fieldSchema[name].validate(value);
+export const validateField = (name, value, schema) => {
+    const fieldSchema = schema.extract(name);
+    const { error } = fieldSchema.validate(value);
     return error?.details[0]?.message || null;
 };
 
@@ -78,14 +79,16 @@ export const validateForm = (formData, schema) => {
         const field = err.path[0];
         errors[field] = err.message;
     });
-    
+
     return errors;
 };
 
-export const handleChange = (e, setForm, setErrors, fieldSchema) => {
+export const handleChange = (e, setForm, setErrors = null, fieldSchema = null) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
 
-    const errMsg = validateField(name, value, fieldSchema);
-    setErrors(prev => ({ ...prev, [name]: errMsg }));
+    if(setErrors && fieldSchema) {
+        const errMsg = validateField(name, value, fieldSchema);
+        setErrors(prev => ({ ...prev, [name]: errMsg }));
+    }
 };

@@ -58,7 +58,7 @@ model User {
   doorNumber   String?
   confirmationCode String?
   salt String?
-  userConfirmed Boolean
+  userConfirmed Boolean?
   created      DateTime            @default(now())
   updated      DateTime            @updatedAt
 

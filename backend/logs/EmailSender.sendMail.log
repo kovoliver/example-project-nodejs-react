@@ -1,0 +1,16 @@
+errno:-4039
+code:ESOCKET
+syscall:connect
+address:64.233.184.27
+port:465
+command:CONN
+date: 2025-11-05 13:12:15
+******************************************
+errno:-4039
+code:ESOCKET
+syscall:connect
+address:64.233.184.26
+port:587
+command:CONN
+date: 2025-11-05 13:13:23
+******************************************

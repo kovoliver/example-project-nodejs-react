@@ -5,10 +5,9 @@ import https from "https";
 import http from "http";
 import fs from "fs";
 import path from "path";
-import { defaultValue } from "./functions.js";
+import { defaultValue, __dirname } from "./functions.js";
 import dotenv from 'dotenv';
-import { dirname } from 'path';
-console.log(dirname);
+console.log(__dirname);
 dotenv.config();
 class HTTP {
     app;
@@ -19,7 +18,7 @@ class HTTP {
         // Ha nincs PORT a .env-ben, legyen default 3001
         this.port = Number(defaultValue(process.env.PORT, 3001));
         // Ha nincs CBASEURL, legyen default 'http://localhost:3000'
-        const clientBaseUrl = defaultValue(process.env.CBASEURL, "http://localhost:3000");
+        const clientBaseUrl = defaultValue(process.env.CBASEURL, "http://localhost:5173");
         // CORS beállítás
         this.app.use(cors({
             origin: clientBaseUrl,
@@ -52,7 +51,7 @@ class HTTP {
     }
     listen() {
         if (process.env.NODE_ENV === "development") {
-            const certPath = path.resolve(__dirname, "../../certs");
+            const certPath = path.resolve(__dirname, "../certificates");
             const key = fs.readFileSync(path.join(certPath, "key.pem"));
             const cert = fs.readFileSync(path.join(certPath, "cert.pem"));
             https.createServer({ key, cert }, this.app)

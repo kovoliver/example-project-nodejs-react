@@ -16,7 +16,7 @@ CREATE TABLE `users` (
     `doorNumber` VARCHAR(191) NULL,
     `confirmationCode` VARCHAR(191) NULL,
     `salt` VARCHAR(191) NULL,
-    `userConfirmed` BOOLEAN NOT NULL,
+    `userConfirmed` BOOLEAN NULL,
     `created` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated` DATETIME(3) NOT NULL,
 

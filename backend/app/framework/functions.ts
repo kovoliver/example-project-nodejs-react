@@ -1,6 +1,7 @@
 import { fileURLToPath } from "url";
-import * as path from "path";
+import { dirname, resolve } from 'path';
 import * as crypto from "crypto";
+import fs from "fs/promises";
 
 interface NodeModuleLike {
     filename: string;
@@ -15,15 +16,10 @@ export function defaultValue(value: any, defValue: any) {
 };
 
 export function getDirName(meta?: NodeModuleLike | URL): string {
-    if (meta instanceof URL) {
-        return path.dirname(fileURLToPath(meta));
-    }
-
-    if (meta && (meta as NodeModuleLike).filename) {
-        return path.dirname((meta as NodeModuleLike).filename);
-    }
-
-    return process.cwd();
+    const __filename: string = fileURLToPath(import.meta.url);
+    const __dirname: string = dirname(__filename);
+    const baseDir = resolve(__dirname, '..', '..');
+    return baseDir;
 }
 
 export function createHash(password: string, salt:string):string {
@@ -49,3 +45,38 @@ export function randomString(length: number): string {
     const bytes = Math.ceil(length / 2);
     return crypto.randomBytes(bytes).toString('hex').slice(0, length);
 }
+
+export const numberWithZero = (n:number):string=>n.toString().padStart(2, "0");
+
+export function getMySqlDate(d:Date):string {
+    const y = numberWithZero(d.getFullYear());
+    const m = numberWithZero(d.getMonth()+1);
+    const day = numberWithZero(d.getDate());
+    const h = numberWithZero(d.getHours());
+    const min = numberWithZero(d.getMinutes());
+    const s = numberWithZero(d.getSeconds());
+    return `${y}-${m}-${day} ${h}:${min}:${s}`;
+}
+
+export async function loggerFunc(msg:any, cls:string, method:string) {
+    try {
+
+        let msgStr = ``;
+
+        if(typeof msg === 'object') {
+            for(const keyValue of Object.entries(msg)) {
+                msgStr += `${keyValue[0]}:${keyValue[1]}\n`;
+            }
+        } else {
+            msgStr += msg;
+        }
+
+        msgStr += `date: ${getMySqlDate(new Date())}\n`;
+        msgStr += "******************************************\n";
+        await fs.appendFile(`./logs/${cls}.${method}.log`, msgStr);
+    } catch(err) {
+        console.log("logger: ", err);
+    }
+}
+
+export const __dirname = getDirName();
