@@ -4,14 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "cross-env HTTPS=true SSL_CRT_FILE='../../certificates/cert.pem' SSL_KEY_FILE='../../certificates/key.pem' vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "cross-env HTTPS=true SSL_CRT_FILE='../certificates/cert.pem' SSL_KEY_FILE='../certificates/key.pem' vite"
+    "start": "cross-env HTTPS=true SSL_CRT_FILE='../../certificates/cert.pem' SSL_KEY_FILE='../../certificates/key.pem' vite"
   },
   "dependencies": {
     "cross-env": "^10.1.0",
+    "joi": "^18.0.1",
+    "jwt-decode": "^4.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5",

@@ -6,6 +6,10 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { defaultValue } from "./functions.js";
+import dotenv from 'dotenv';
+import { dirname } from 'path';
+console.log(dirname);
+dotenv.config();
 class HTTP {
     app;
     port;
@@ -26,6 +30,7 @@ class HTTP {
         // Body parser
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+        this.listen();
     }
     addRoute(method, path, ...handlers) {
         this.app[method](`${this.apiPrefix}${path}`, ...handlers);
