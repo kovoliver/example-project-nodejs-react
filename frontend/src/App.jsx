@@ -7,6 +7,7 @@ import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import HomePage from "./pages/HomePage";
 import "./assets/scss/style.scss";
+import ConfirmRegistration from "./pages/ConfirmRegistration";
 
 export const GlobalContext = createContext();
 
@@ -22,6 +23,7 @@ function App() {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/register" element={<RegisterPage />} />
                         <Route path="/login" element={<LoginPage />} />
+                        <Route path="/confirm-registration" element={<ConfirmRegistration />} />
                     </Route>
 
                     {/* <Route

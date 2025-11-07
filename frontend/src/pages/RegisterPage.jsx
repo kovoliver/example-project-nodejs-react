@@ -34,11 +34,11 @@ export default function RegisterPage() {
     };
 
     return (
-        <div style={{ maxWidth: "400px", margin: "50px auto" }}>
+        <div className="text-center maxw-500 margin-auto box-light radius-md">
             <h1>Register</h1>
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: "10px" }}>
-                    <label>Email:</label>
+                    <h4>Email</h4>
                     <label>{errors.email ? errors.email : ""}</label>
                     <input
                         type="email"
@@ -46,7 +46,7 @@ export default function RegisterPage() {
                         value={formData.email}
                         onChange={(e) => handleChange(e, setFormData, setErrors, regSchema)}
                         required
-                        style={{ width: "100%" }}
+                        className="input-md input-primary wp-100"
                     />
                 </div>
                 <div style={{ marginBottom: "10px" }}>
@@ -59,7 +59,7 @@ export default function RegisterPage() {
                         value={formData.pass}
                         onChange={(e) => handleChange(e, setFormData, setErrors, regSchema)}
                         required
-                        style={{ width: "100%" }}
+                        className="input-md input-primary wp-100"
                     />
                 </div>
 
@@ -73,7 +73,7 @@ export default function RegisterPage() {
                         value={formData.passAgain}
                         onChange={(e) => handleChange(e, setFormData)}
                         required
-                        style={{ width: "100%" }}
+                        className="input-md input-primary wp-100"
                     />
                 </div>
 

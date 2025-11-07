@@ -47,5 +47,48 @@ class UserHandlerModel extends Model {
             };
         }
     }
+    async confirmRegistration(userID, code) {
+        try {
+            // Megkeressük a felhasználót az ID és a confirmationCode alapján
+            const user = await this.model.findUnique({
+                where: {
+                    userID: userID,
+                    confirmationCode: code
+                }
+            });
+            // Ha nincs ilyen felhasználó vagy már meg van erősítve
+            if (!user) {
+                return {
+                    status: 400,
+                    message: "Invalid confirmation link or user not found."
+                };
+            }
+            if (user.userConfirmed === true) {
+                return {
+                    status: 400,
+                    message: "This account has already been confirmed."
+                };
+            }
+            //Frissítjük az adatbázist — confirmed = true
+            await this.model.update({
+                where: { userID: userID },
+                data: {
+                    userConfirmed: true,
+                    confirmationCode: null
+                }
+            });
+            return {
+                status: 200,
+                message: "Your registration has been successfully confirmed."
+            };
+        }
+        catch (err) {
+            console.log(err);
+            return {
+                status: 500,
+                message: err.message || "An error occurred during confirmation."
+            };
+        }
+    }
 }
 export default UserHandlerModel;

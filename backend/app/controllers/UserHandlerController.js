@@ -8,6 +8,7 @@ class UserHandlerController extends Controller {
         this.model = new UserHandlerModel();
         // Endpoint létrehozása a konstruktorban
         this.http.post("/user/register", this.register.bind(this));
+        this.http.get("/user/confirm-registration/:userID/:code", this.confirmRegistration.bind(this));
     }
     async register(req, res) {
         try {
@@ -26,6 +27,27 @@ class UserHandlerController extends Controller {
             return res.status(500).json({
                 status: 500,
                 message: err.message || "Unexpected error"
+            });
+        }
+    }
+    async confirmRegistration(req, res) {
+        try {
+            // A userID és a code jön a query paraméterekből (pl. /user/confirm-registration?userID=12&code=abcd123)
+            const { userID, code } = req.params;
+            if (!userID || !code) {
+                return res.status(400).json({
+                    status: 400,
+                    message: "Missing userID or confirmation code."
+                });
+            }
+            // Meghívjuk a model metódusát
+            const response = await this.model.confirmRegistration(parseInt(userID), code);
+            return res.status(response.status).json(response);
+        }
+        catch (err) {
+            return res.status(500).json({
+                status: 500,
+                message: err.message || "Unexpected error during confirmation."
             });
         }
     }

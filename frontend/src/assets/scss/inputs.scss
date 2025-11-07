@@ -1,0 +1,27 @@
+@each $key, $color in $colors {
+    .input-#{$key} {
+        border:2px solid map-get($colors, "mid");
+        border-radius: 4px;
+
+        &:focus {
+            outline: 0;
+            border: 2px solid $color;
+        }
+    }
+}
+
+.input-xs {
+    padding:2px;
+}
+
+.input-sm {
+    padding:map-get($spacing, "xs");
+}
+
+.input-md {
+    padding:map-get($spacing, "sm");
+}
+
+.input-lg {
+    padding:12px;
+}

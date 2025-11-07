@@ -24,14 +24,17 @@
 @include create-spacings("pr", "padding-right", $spacing);
 @include create-spacings("px", "padding-inline", $spacing);
 @include create-spacings("py", "padding-block", $spacing);
-@include map-classes("text", "font-size", $font-sizes);
+
 @include list-classes("d", "display", $displays);
 @include list-classes("pos", "position", $positions);
 @include list-classes("cursor", "cursor", $cursors);
+@include list-classes("text", "text-align", $textAligns);
+
 @include map-classes("radius", "border-radius", $radiuses);
 @include map-classes("shadow", "box-shadow", $shadows);
 @include map-classes("z", "z-index", $z-indexes);
 @include map-classes("transition", "transition-duration", $transitions);
+@include map-classes("text", "font-size", $font-sizes);
 
 @include loop-classes("maxw", max-width, 5, 1000, 5, px);
 @include loop-classes("maxh", max-height, 5, 1000, 5, px);
@@ -51,6 +54,18 @@
 @include pseudo-classes("bg", "background-color", $colors, "hover");
 @include pseudo-classes("bg", "background-color", $colors, "active");
 @include pseudo-classes("bg", "background-color", $colors, "focus");
+
+@each $key, $color in $colors {
+    .box-#{$key} {
+        border:1px solid $color;
+        background-color:lighten($color, 10%);
+        padding:map-get($spacing, "sm");
+    }
+}
+
+.margin-auto {
+    margin:auto;
+}
 
 @each $key, $value in $breakpoints {
     .container-#{$key} {

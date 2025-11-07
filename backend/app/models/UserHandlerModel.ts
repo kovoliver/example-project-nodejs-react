@@ -26,8 +26,8 @@ class UserHandlerModel extends Model<'user'> {
             const createdUser = await this.model.create({ data: user as any });
 
             // Megerősítő link összeállítása
-            const confirmUrl = 
-            `${defaultValue(process.env.CBASEURL, "https://localhost:5173")}/confirm-registration?userID=${createdUser.userID}&code=${user.confirmationCode}`;
+            const confirmUrl =
+                `${defaultValue(process.env.CBASEURL, "https://localhost:5173")}/confirm-registration?userID=${createdUser.userID}&code=${user.confirmationCode}`;
 
             // Email HTML tartalom
             const html = `
@@ -39,7 +39,7 @@ class UserHandlerModel extends Model<'user'> {
 
             // Email küldés
             EmailSender.sendMail({
-                from:defaultValue(process.env.SMTP_USER, "kovacs.oliver1989@gmail.com"),
+                from: defaultValue(process.env.SMTP_USER, "kovacs.oliver1989@gmail.com"),
                 to: user.email,
                 subject: 'Regisztráció megerősítése',
                 html,
@@ -55,6 +55,55 @@ class UserHandlerModel extends Model<'user'> {
             return {
                 status: 500,
                 message: err.message || "An error occurred during registration"
+            };
+        }
+    }
+
+    async confirmRegistration(userID: number, code: string): Promise<HTTPResponse> {
+        try {
+            // Megkeressük a felhasználót az ID és a confirmationCode alapján
+            const user = await this.model.findUnique({
+                where: {
+                    userID: userID,
+                    confirmationCode: code
+                }
+            });
+
+            // Ha nincs ilyen felhasználó vagy már meg van erősítve
+            if (!user) {
+                return {
+                    status: 400,
+                    message: "Invalid confirmation link or user not found."
+                };
+            }
+
+            if (user.userConfirmed === true) {
+                return {
+                    status: 400,
+                    message: "This account has already been confirmed."
+                };
+            }
+
+            //Frissítjük az adatbázist — confirmed = true
+            await this.model.update({
+                where: { userID: userID },
+                data: {
+                    userConfirmed: true,
+                    confirmationCode: null
+                }
+            });
+
+            return {
+                status: 200,
+                message: "Your registration has been successfully confirmed."
+            };
+
+        } catch (err: any) {
+            console.log(err);
+
+            return {
+                status: 500,
+                message: err.message || "An error occurred during confirmation."
             };
         }
     }
