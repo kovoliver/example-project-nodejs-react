@@ -50,7 +50,7 @@ export default function RegisterPage() {
                     />
                 </div>
                 <div style={{ marginBottom: "10px" }}>
-                    <label>Password:</label>
+                    <h4>Password</h4>
                     <label>{errors.pass ? errors.pass : ""}</label>
 
                     <input
@@ -64,8 +64,9 @@ export default function RegisterPage() {
                 </div>
 
                 <div style={{ marginBottom: "10px" }}>
-                    <label>Password:</label>
-                    <label>{formData.pass !== formData.passAgain ? "A két jelszó nem egyezik" : ""}</label>
+                    <h4>Password</h4>
+                    <label>{formData.pass !== formData.passAgain && formData.pass !== "" 
+                    ? "A két jelszó nem egyezik" : ""}</label>
 
                     <input
                         type="password"
@@ -77,7 +78,7 @@ export default function RegisterPage() {
                     />
                 </div>
 
-                <button type="submit" style={{ width: "100%" }}>Register</button>
+                <button className="input-md btn-secondary">Register</button>
             </form>
             
         </div>

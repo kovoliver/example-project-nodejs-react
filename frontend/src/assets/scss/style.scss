@@ -5,3 +5,31 @@
 @import "grid.scss";
 @import "flex.scss";
 @import "nav.scss";
+
+h1 {
+    color:map-get($colors, "primary");
+}
+
+h2 {
+    color:map-get($colors, "primary-lighter");
+}
+
+h3 {
+    color:map-get($colors, "secondary-darker");
+}
+
+h4 {
+    color:map-get($colors, "dark");
+}
+
+h5, h6 {
+    color:map-get($colors, "dark-mid");
+}
+
+nav a {
+    text-decoration: none;
+}
+
+.selected-menu {
+    background-color:map-get($colors, "secondary-darker");
+}

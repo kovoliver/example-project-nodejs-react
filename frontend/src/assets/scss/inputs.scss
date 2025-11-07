@@ -8,6 +8,19 @@
             border: 2px solid $color;
         }
     }
+
+    .btn-#{$key} {
+        border:2px solid darken($color, 10%);
+        background-color:$color;
+        border-radius: 4px;
+        color: if(lightness($color) > 50%, black, white);
+
+        &:focus {
+            outline: 0;
+            border: 2px solid $color;
+            background-color:lighten($color, 10%);
+        }
+    }
 }
 
 .input-xs {
