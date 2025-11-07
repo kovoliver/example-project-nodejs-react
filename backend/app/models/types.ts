@@ -135,3 +135,12 @@ export type MailOptions = {
     text?: string;
     html?: string;
 }
+
+export type HTTPMethod = "get" | "post" | "put" | "patch" | "delete" | "head";
+
+export type EndPoint = {
+    method: HTTPMethod;
+    path: string;
+    handler: Function,
+    middleware?:Function
+}

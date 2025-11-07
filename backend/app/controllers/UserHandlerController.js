@@ -7,8 +7,9 @@ class UserHandlerController extends Controller {
         super(userSchema);
         this.model = new UserHandlerModel();
         // Endpoint létrehozása a konstruktorban
-        this.http.post("/user/register", this.register.bind(this));
-        this.http.get("/user/confirm-registration/:userID/:code", this.confirmRegistration.bind(this));
+        // this.http.post("/user/register", this.register.bind(this));
+        // this.http.get("/user/confirm-registration/:userID/:code", this.confirmRegistration.bind(this));
+        // this.http.post("/user/login", this.login.bind(this));
     }
     async register(req, res) {
         try {
@@ -48,6 +49,27 @@ class UserHandlerController extends Controller {
             return res.status(500).json({
                 status: 500,
                 message: err.message || "Unexpected error during confirmation."
+            });
+        }
+    }
+    async login(req, res) {
+        try {
+            const { email, pass } = req.body;
+            if (!email || !pass) {
+                return res.status(400).json({
+                    status: 400,
+                    message: "Email and password are required.",
+                });
+            }
+            // Meghívjuk a Model.login metódust
+            const response = await this.model.login(email, pass);
+            return res.status(response.status).json(response);
+        }
+        catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                status: 500,
+                message: err.message || "Unexpected error during login.",
             });
         }
     }
