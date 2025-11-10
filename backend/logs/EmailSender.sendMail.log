@@ -14,3 +14,59 @@ port:587
 command:CONN
 date: 2025-11-05 13:13:23
 ******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 14:49:47
+******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 14:51:18
+******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 15:05:27
+******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 15:06:29
+******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 15:07:38
+******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 15:10:16
+******************************************
+errno:-4078
+code:ESOCKET
+syscall:connect
+address:::1
+port:587
+command:CONN
+date: 2025-11-10 15:11:11
+******************************************

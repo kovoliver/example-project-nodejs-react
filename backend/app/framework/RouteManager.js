@@ -1,35 +1,20 @@
 import { httpServer } from "./HTTP.js";
 export default class RouteManager {
-    static registerEndpoint(endpoint, instance) {
-        const { method, path, handler, middleware } = endpoint;
-        // Ha a handler string, a controller példányból vegyük ki
-        let boundHandler = handler;
-        if (typeof handler === "string" && instance) {
-            boundHandler = instance[handler].bind(instance);
-        }
-        else if (instance) {
-            boundHandler = handler.bind(instance);
-        }
-        // Middleware lehet egy függvény vagy tömb, bind-oljuk ha kell
-        const middlewares = [];
-        if (middleware) {
-            if (Array.isArray(middleware)) {
-                for (const mw of middleware) {
-                    middlewares.push(instance ? mw.bind(instance) : mw);
-                }
-            }
-            else {
-                middlewares.push(instance ? middleware.bind(instance) : middleware);
-            }
-        }
-        httpServer[method](path, ...middlewares, boundHandler);
-        console.log(`[RouteManager] Registered: ${method.toUpperCase()} ${path}`);
+    static registerEndpoint(method, path, ...handlers) {
+        // @ts-ignore - dinamikus metódushívás a HTTP osztályban
+        httpServer[method](path, ...handlers);
+        console.log(`[Route] ${method.toUpperCase()} ${path} registered.`);
     }
-    static registerController(instance) {
-    }
-    /**
-     * Több controller egyszerre regisztrálása.
-     */
-    static registerControllers(instances) {
+    static registerController(ControllerClass) {
+        const instance = new ControllerClass();
+        const basePath = Reflect.getMetadata('basePath', ControllerClass) || '';
+        const routes = Reflect.getMetadata('routes', ControllerClass) || [];
+        routes.forEach(({ method, path, handler, middlewares }) => {
+            const fullPath = basePath + path;
+            const handlerFn = instance[handler].bind(instance);
+            // Middleware-ek kezelése, ha vannak
+            const allHandlers = middlewares && middlewares.length > 0 ? [...middlewares, handlerFn] : [handlerFn];
+            this.registerEndpoint(method, fullPath, ...allHandlers);
+        });
     }
 }

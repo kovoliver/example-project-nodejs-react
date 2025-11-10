@@ -1,13 +1,13 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import { MailOptions } from '../models/types.js';
 import { loggerFunc } from './functions.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class EmailSender {
     private static transporter: Transporter;
 
     public static init() {
-        //az alábbi sor kell vissza!
-        //secure: process.env.SMTP_SECURE === 'true',
         this.transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: Number(process.env.SMTP_PORT),

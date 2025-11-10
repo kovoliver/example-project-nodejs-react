@@ -6,9 +6,6 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { defaultValue, __dirname } from "./functions.js";
-import dotenv from 'dotenv';
-console.log(__dirname);
-dotenv.config();
 class HTTP {
     app;
     port;
@@ -48,6 +45,9 @@ class HTTP {
     }
     delete(path, ...handlers) {
         this.addRoute("delete", path, ...handlers);
+    }
+    head(path, ...handlers) {
+        this.addRoute("head", path, ...handlers);
     }
     listen() {
         if (process.env.NODE_ENV === "development") {

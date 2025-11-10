@@ -2,31 +2,35 @@ import Controller from "./Controller.js";
 import { userSchema } from "./validation.js";
 import UserHandlerModel from "../models/UserHandlerModel.js";
 import { HTTPResponse } from "../models/types.js";
+import { Get, Post, RouteController } from "../framework/decorators.js";
 
+@RouteController("/user")
 class UserHandlerController extends Controller {
     private model: UserHandlerModel;
 
     constructor() {
         super(userSchema);
         this.model = new UserHandlerModel();
-
-        // Endpoint létrehozása a konstruktorban
-        // this.http.post("/user/register", this.register.bind(this));
-        // this.http.get("/user/confirm-registration/:userID/:code", this.confirmRegistration.bind(this));
-        // this.http.post("/user/login", this.login.bind(this));
     }
 
+    @Post("/register")
     public async register(req: any, res: any) {
 
         try {
             const { error, value } = this.schema.validate(req.body, { abortEarly: false });
+            let messages = [];
 
             delete value.passAgain;
-            
-            if (error) {
+            const exists = await this.model.checkExists("email", value.email);
+
+            messages = error ? error.details.map((d: any) => d.message) : [];
+
+            if(exists) messages.push("A megadott email cím már regisztrálva van egy másik felhasználóhoz!");
+
+            if (messages.length > 0) {
                 return res.status(400).json({
                     status: 400,
-                    message: error.details.map((d: any) => d.message)
+                    message: messages
                 });
             }
 
@@ -41,6 +45,7 @@ class UserHandlerController extends Controller {
         }
     }
 
+    @Get("/confirm-registration/:userID/:code")
     public async confirmRegistration(req: any, res: any) {
         try {
             // A userID és a code jön a query paraméterekből (pl. /user/confirm-registration?userID=12&code=abcd123)
@@ -65,6 +70,7 @@ class UserHandlerController extends Controller {
         }
     }
 
+    @Get("/confirm-registration/:userID/:code")
     public async login(req: any, res: any) {
         try {
             const { email, pass } = req.body;

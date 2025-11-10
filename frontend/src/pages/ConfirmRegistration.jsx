@@ -7,40 +7,37 @@ const ConfirmRegistration = () => {
     const [status, setStatus] = useState("pending");
     const [message, setMessage] = useState("Confirming your registration...");
     const [countdown, setCountdown] = useState(5);
+    const queryParams = new URLSearchParams(window.location.search);
+    const userID = queryParams.get("userID");
+    const code = queryParams.get("code");
+
+    const confirm = async () => {
+        try {
+            const response = await fetch(
+                `${sBaseUrl}/user/confirm-registration/${userID}/${code}`
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setStatus("success");
+                setMessage(data.message || "Your registration has been confirmed successfully!");
+            } else {
+                setStatus("error");
+                setMessage(data.message || "Confirmation failed. Please try again.");
+            }
+        } catch (err) {
+            setStatus("error");
+            setMessage("An error occurred while confirming your registration.");
+        }
+    };
 
     useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const userID = queryParams.get("userID");
-        const code = queryParams.get("code");
-
         if (!userID || !code) {
             setStatus("error");
             setMessage("Invalid confirmation link.");
             return;
         }
-
-        const confirm = async () => {
-            try {
-                const response = await fetch(
-                    `${sBaseUrl}/user/confirm-registration/${userID}/${code}`
-                );
-
-                const data = await response.json();
-
-                console.log(data);
-
-                if (response.ok) {
-                    setStatus("success");
-                    setMessage(data.message || "Your registration has been confirmed successfully!");
-                } else {
-                    setStatus("error");
-                    setMessage(data.message || "Confirmation failed. Please try again.");
-                }
-            } catch (err) {
-                setStatus("error");
-                setMessage("An error occurred while confirming your registration.");
-            }
-        };
 
         confirm();
     }, []);

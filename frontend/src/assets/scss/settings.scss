@@ -34,7 +34,7 @@
 @include map-classes("shadow", "box-shadow", $shadows);
 @include map-classes("z", "z-index", $z-indexes);
 @include map-classes("transition", "transition-duration", $transitions);
-@include map-classes("text", "font-size", $font-sizes);
+@include map-classes("font", "font-size", $font-sizes);
 
 @include loop-classes("maxw", max-width, 5, 1000, 5, px);
 @include loop-classes("maxh", max-height, 5, 1000, 5, px);

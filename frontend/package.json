@@ -11,6 +11,11 @@
     "start": "cross-env HTTPS=true SSL_CRT_FILE='../../certificates/cert.pem' SSL_KEY_FILE='../../certificates/key.pem' vite"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-brands-svg-icons": "^7.1.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.0",
     "cross-env": "^10.1.0",
     "joi": "^18.0.1",
     "jwt-decode": "^4.0.0",

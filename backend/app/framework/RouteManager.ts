@@ -1,45 +1,30 @@
-import { httpServer } from "./HTTP.js";
-import { EndPoint } from "../models/types.js";
+import { HTTP, httpServer } from "./HTTP.js";
+import { RouteDefinition } from "../models/types.js";
 
 export default class RouteManager {
-    static registerEndpoint(endpoint: EndPoint, instance?: any): void {
-        const { method, path, handler, middleware } = endpoint;
-
-        // Ha a handler string, a controller példányból vegyük ki
-        let boundHandler = handler;
-
-        if (typeof handler === "string" && instance) {
-            boundHandler = instance[handler].bind(instance);
-        } else if (instance) {
-            boundHandler = handler.bind(instance);
-        }
-
-        // Middleware lehet egy függvény vagy tömb, bind-oljuk ha kell
-        const middlewares = [];
-
-        if (middleware) {
-            if (Array.isArray(middleware)) {
-                for (const mw of middleware) {
-                    middlewares.push(instance ? mw.bind(instance) : mw);
-                }
-            } else {
-                middlewares.push(instance ? middleware.bind(instance) : middleware);
-            }
-        }
-
-        (httpServer as any)[method](path, ...middlewares, boundHandler);
-
-        console.log(`[RouteManager] Registered: ${method.toUpperCase()} ${path}`);
+    public static registerEndpoint(
+        method: keyof typeof httpServer,
+        path: string,
+        ...handlers: Array<(req: any, res: any, next: any) => any>
+    ) {
+        // @ts-ignore - dinamikus metódushívás a HTTP osztályban
+        httpServer[method](path, ...handlers);
+        console.log(`[Route] ${method.toUpperCase()} ${path} registered.`);
     }
 
-    static registerController(instance: any): void {
+    public static registerController(ControllerClass: any) {
+        const instance = new ControllerClass();
+        const basePath: string = Reflect.getMetadata('basePath', ControllerClass) || '';
+        const routes: RouteDefinition[] = Reflect.getMetadata('routes', ControllerClass) || [];
 
-    }
+        routes.forEach(({ method, path, handler, middlewares }) => {
+            const fullPath = basePath + path;
+            const handlerFn = instance[handler].bind(instance);
 
-    /**
-     * Több controller egyszerre regisztrálása.
-     */
-    static registerControllers(instances: any[]): void {
+            // Middleware-ek kezelése, ha vannak
+            const allHandlers = middlewares && middlewares.length > 0 ? [...middlewares, handlerFn] : [handlerFn];
 
+            this.registerEndpoint(method, fullPath, ...allHandlers);
+        });
     }
 }

@@ -138,9 +138,9 @@ export type MailOptions = {
 
 export type HTTPMethod = "get" | "post" | "put" | "patch" | "delete" | "head";
 
-export type EndPoint = {
+export type RouteDefinition = {
     method: HTTPMethod;
     path: string;
-    handler: Function,
-    middleware?:Function
+    handler: string,
+    middlewares?:Function[]
 }

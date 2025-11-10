@@ -33,3 +33,14 @@ nav a {
 .selected-menu {
     background-color:map-get($colors, "secondary-darker");
 }
+
+.dismiss {
+    width:20px;
+    height:20px;
+    border-radius: 100%;
+    background-color: map-get($colors, "dark");
+    color:white;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}

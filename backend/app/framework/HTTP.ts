@@ -6,9 +6,6 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { defaultValue, __dirname } from "./functions.js";
-import dotenv from 'dotenv';
-console.log(__dirname);
-dotenv.config();
 
 class HTTP {
     public app: Express;
@@ -41,7 +38,7 @@ class HTTP {
     }
 
     private addRoute(
-        method: "get" | "post" | "put" | "patch" | "delete",
+        method: "get" | "post" | "put" | "patch" | "delete" | "head",
         path: string,
         ...handlers: Array<(req: Request, res: Response, next: NextFunction) => any>
     ) {
@@ -68,6 +65,10 @@ class HTTP {
         this.addRoute("delete", path, ...handlers);
     }
 
+    public head(path: string, ...handlers: Array<(req: Request, res: Response, next: NextFunction) => any>) {
+        this.addRoute("head", path, ...handlers);
+    }
+
     public listen() {
         if (process.env.NODE_ENV === "development") {
             const certPath = path.resolve(__dirname, "../certificates");
@@ -89,4 +90,4 @@ class HTTP {
 
 const httpServer = new HTTP();
 
-export {HTTP, httpServer};
+export { HTTP, httpServer };

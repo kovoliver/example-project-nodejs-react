@@ -70,24 +70,28 @@ export const validateField = (name, value, schema) => {
 
 export const validateForm = (formData, schema) => {
     const { error } = schema.validate(formData, { abortEarly: false });
-
-    if (!error) return null;
-
+    const keys = Object.keys(formData);
     const errors = {};
+
+    for (const key of keys) {
+        errors[key] = null;
+    }
+
+    if (!error) return {passed:true, messages:errors};
 
     error.details.forEach((err) => {
         const field = err.path[0];
         errors[field] = err.message;
     });
 
-    return errors;
+    return { passed: Object.values(errors).every(el=>el === null), messages: errors };
 };
 
 export const handleChange = (e, setForm, setErrors = null, fieldSchema = null) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
 
-    if(setErrors && fieldSchema) {
+    if (setErrors && fieldSchema) {
         const errMsg = validateField(name, value, fieldSchema);
         setErrors(prev => ({ ...prev, [name]: errMsg }));
     }
