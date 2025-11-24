@@ -3,7 +3,6 @@ import { useContext, useState } from "react";
 import { fetchAPI, handleChange, validateForm } from "../app/functions";
 import { sBaseUrl } from "../app/url";
 import { regSchema } from "../app/schemas";
-import Messages from "../components/Messages";
 import { GlobalContext } from "../App";
 
 export default function RegisterPage() {
@@ -37,6 +36,12 @@ export default function RegisterPage() {
             });
             
             gc.setMessages(response.message, "success");
+
+            setFormData({
+                email:"",
+                pass:"",
+                passAgain:""
+            });
         } catch (err) {
             gc.setMessages(err.message||["Error during registration!"], "error");
         }

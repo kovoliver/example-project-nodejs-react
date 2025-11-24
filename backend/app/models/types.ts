@@ -56,16 +56,16 @@ export type User = {
 };
 
 export type Profile = {
-    userID?: number;
-    email: string;
+    userID: number;
+    email?: string;
     title?: Title;
-    firstName?: string;
-    lastName?: string;
-    zip?: string;
-    settlement?: string;
-    street?: string;
-    streetType?: StreetType;
-    houseNumber?: string;
+    firstName: string;
+    lastName: string;
+    zip: string;
+    settlement: string;
+    street: string;
+    streetType: StreetType;
+    houseNumber: string;
     floorNumber?: string;
     doorNumber?: string;
 };
@@ -124,8 +124,9 @@ export type HTTPResponse = {
 
 export type TokenPayload = {
     userID: number;
-    role: Role;
-    email: string;
+    role: "USER"|"ADMIN";
+    firstName: string;
+    lastName: string;
 };
 
 export type MailOptions = {

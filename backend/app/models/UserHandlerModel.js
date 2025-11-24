@@ -116,7 +116,7 @@ class UserHandlerModel extends Model {
             const html = `
                 <h3>Kétlépcsős azonosítás</h3>
                 <p>A bejelentkezés befejezéséhez add meg az alábbi kódot:</p>
-                <h2>${key}</h2>
+                <a href="${process.env.CBASEURL}/two-factor-login/${user.userID}/${key}">Kattints ide!</a>
                 <p>Ez a kód 5 percig érvényes.</p>
             `;
             await EmailSender.sendMail({

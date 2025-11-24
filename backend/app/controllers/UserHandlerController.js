@@ -12,17 +12,19 @@ import { userSchema } from "./validation.js";
 import UserHandlerModel from "../models/UserHandlerModel.js";
 import { Get, Post, RouteController } from "../framework/decorators.js";
 let UserHandlerController = class UserHandlerController extends Controller {
-    model;
     constructor() {
-        super(userSchema);
-        this.model = new UserHandlerModel();
+        super(new UserHandlerModel(), userSchema);
     }
     async register(req, res) {
+        if (this.schema === null) {
+            return res.status(503).json({ message: "A szolgáltatás ideiglenesen nem érhető el!" });
+        }
+        ;
         try {
             const { error, value } = this.schema.validate(req.body, { abortEarly: false });
             let messages = [];
             delete value.passAgain;
-            const exists = await this.model.checkExists("email", value.email);
+            const exists = await this.model?.checkExists("email", value.email);
             messages = error ? error.details.map((d) => d.message) : [];
             if (exists)
                 messages.push("A megadott email cím már regisztrálva van egy másik felhasználóhoz!");
@@ -98,7 +100,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserHandlerController.prototype, "confirmRegistration", null);
 __decorate([
-    Get("/confirm-registration/:userID/:code"),
+    Post("/login"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

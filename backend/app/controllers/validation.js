@@ -178,3 +178,14 @@ export const tokenPayloadSchema = Joi.object({
         "string.base": "Az email mezőnek szövegnek kell lennie!"
     }),
 });
+export const twoFactorKeySchema = Joi.object({
+    userID: Joi.number().integer().required().messages({
+        "any.required": "A felhasználói azonosító érték nem található!",
+        "number.base": "A felhasználói azonosítónak számnak kell lennie!",
+        "number.integer": "A felhasználói azonosító csak egész szám lehet!"
+    }),
+    key: Joi.string().required().messages({
+        "any.required": "A kulcs mező nem található!",
+        "any.base": "A kulcs mezőnek karakterláncnak kell lennie!"
+    })
+});

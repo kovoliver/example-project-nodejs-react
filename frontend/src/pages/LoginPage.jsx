@@ -1,20 +1,18 @@
 // LoginPage.jsx
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { fetchAPI, handleChange } from "../app/functions";
 import { sBaseUrl } from "../app/url";
+import { GlobalContext } from "../App";
 
 export default function LoginPage() {
     const [formData, setFormData] = useState({
         email: "",
         pass: ""
     });
-    const [error, setError] = useState("");
-    const [message, setMessage] = useState("");
+    const gc = useContext(GlobalContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
-        setMessage("");
 
         try {
             const res = await fetchAPI(`${sBaseUrl}/user/login`, {
@@ -23,23 +21,20 @@ export default function LoginPage() {
                 body: JSON.stringify(formData),
             });
 
-            const data = await res.json();
-            if (res.ok) {
-                setMessage(data.message || "Login successful");
-                // ide jöhet pl. redirect vagy token tárolás
-            } else {
-                setError(data.message || "Invalid credentials");
-            }
+            gc.setMessages(res.message, "success");
+
+            setFormData({
+                email: "",
+                pass: ""
+            });
         } catch (err) {
-            setError(err.message || "Error during login");
+            gc.setMessages(res.message, "error");
         }
     };
 
     return (
         <div className="text-center maxw-500 margin-auto box-light radius-md">
             <h1>Login</h1>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {message && <p style={{ color: "green" }}>{message}</p>}
 
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: "10px" }}>

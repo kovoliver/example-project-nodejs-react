@@ -151,8 +151,9 @@ model TwoFactorKey {
   keyID Int @id @default(autoincrement())
   userID Int
   key String
+  used Boolean @default(false)
   issuedAt DateTime @default(now())
   expiredAt  DateTime @default(dbgenerated("(CURRENT_TIMESTAMP + INTERVAL 5 MINUTE)"))
-  userKey   User?      @relation("UserKey", fields: [userID], references: [userID], onDelete: Cascade)
+  userData   User?      @relation("UserKey", fields: [userID], references: [userID], onDelete: Cascade)
   @@map("two_factor_keys")
 }

@@ -12,11 +12,17 @@ export function defaultValue(value, defValue) {
     return !undefinedOrNull(value) ? value : defValue;
 };
 
-function storeToken(token) {
+function storeToken(token, gc = null) {
     try {
         const tokenInfo = jwtDecode(token);
+        const sessionInfo = JSON.stringify(tokenInfo);
         localStorage.setItem("token", token);
-        localStorage.setItem("sessionInfo", JSON.stringify(tokenInfo));
+        localStorage.setItem("sessionInfo", sessionInfo);
+        
+        if (gc !== null) {
+            gc.setToken(token);
+            gc.setSessionInfo(sessionInfo);
+        }
         return tokenInfo;
     } catch (e) {
         console.error("Invalid token received:", e);
@@ -24,7 +30,7 @@ function storeToken(token) {
     }
 }
 
-export const fetchAPI = async (path, settings = {}) => {
+export const fetchAPI = async (path, settings = {}, gc = null) => {
     try {
         const response = await fetch(path, settings);
 
@@ -33,7 +39,7 @@ export const fetchAPI = async (path, settings = {}) => {
 
         if (authHeader && authHeader.startsWith("Bearer ")) {
             const token = authHeader.replace("Bearer ", "");
-            storeToken(token);
+            storeToken(token, gc);
         }
 
         // 📦 Response feldolgozása
@@ -77,14 +83,14 @@ export const validateForm = (formData, schema) => {
         errors[key] = null;
     }
 
-    if (!error) return {passed:true, messages:errors};
+    if (!error) return { passed: true, messages: errors };
 
     error.details.forEach((err) => {
         const field = err.path[0];
         errors[field] = err.message;
     });
 
-    return { passed: Object.values(errors).every(el=>el === null), messages: errors };
+    return { passed: Object.values(errors).every(el => el === null), messages: errors };
 };
 
 export const handleChange = (e, setForm, setErrors = null, fieldSchema = null) => {

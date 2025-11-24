@@ -5,27 +5,27 @@ import { HTTPResponse } from "../models/types.js";
 import { Get, Post, RouteController } from "../framework/decorators.js";
 
 @RouteController("/user")
-class UserHandlerController extends Controller {
-    private model: UserHandlerModel;
-
+class UserHandlerController extends Controller<UserHandlerModel> {
     constructor() {
-        super(userSchema);
-        this.model = new UserHandlerModel();
+        super(new UserHandlerModel() as UserHandlerModel, userSchema);
     }
 
     @Post("/register")
     public async register(req: any, res: any) {
+        if (this.schema === null) {
+            return res.status(503).json({ message: "A szolgáltatás ideiglenesen nem érhető el!" });
+        };
 
         try {
             const { error, value } = this.schema.validate(req.body, { abortEarly: false });
             let messages = [];
 
             delete value.passAgain;
-            const exists = await this.model.checkExists("email", value.email);
+            const exists = await this.model?.checkExists("email", value.email);
 
             messages = error ? error.details.map((d: any) => d.message) : [];
 
-            if(exists) messages.push("A megadott email cím már regisztrálva van egy másik felhasználóhoz!");
+            if (exists) messages.push("A megadott email cím már regisztrálva van egy másik felhasználóhoz!");
 
             if (messages.length > 0) {
                 return res.status(400).json({
@@ -70,7 +70,7 @@ class UserHandlerController extends Controller {
         }
     }
 
-    @Get("/confirm-registration/:userID/:code")
+    @Post("/login")
     public async login(req: any, res: any) {
         try {
             const { email, pass } = req.body;

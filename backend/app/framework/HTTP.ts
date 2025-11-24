@@ -22,9 +22,19 @@ class HTTP {
         const clientBaseUrl = defaultValue(process.env.CBASEURL, "http://localhost:5173");
 
         // CORS beállítás
+
+        /*
+            The HTTP Access-Control-Expose-Headers response header allows a server to indicate 
+            which response headers should be made available to scripts running in the browser in 
+            response to a cross-origin request.
+            Only the CORS-safelisted response headers are exposed by default. For clients to be 
+            able to access other headers, the server must list them using the Access-Control-Expose-Headers header.
+        */
         this.app.use(cors({
             origin: clientBaseUrl,
             credentials: true,
+            allowedHeaders: ["Content-Type", "Authorization"],
+            exposedHeaders: ["Authorization"]
         }));
 
         // Cookie parser

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import GuestLayout from "./layouts/GuestLayout";
 import RegisterPage from "./pages/RegisterPage";
@@ -10,6 +10,7 @@ import "./assets/scss/style.scss";
 import ConfirmRegistration from "./pages/ConfirmRegistration";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'; 
+import TwoFactorLogin from "./pages/TwoFactorLogin";
 
 library.add(
     faCircleXmark
@@ -18,8 +19,9 @@ library.add(
 export const GlobalContext = createContext();
 
 function App() {
-    const user = {userName:"Sanyi", isLoggedIn:false, isAdmin:false, userID:11};
     const [messages, setMsgs] = useState({messages:[], msgCls:"info", maxWidth:500});
+    const [token, setToken] = useState(localStorage.getItem("token"));
+    const [sessionInfo, setSessionInfo] = useState(localStorage.getItem("sessionInfo"));
 
     const setMessages = (messages, msgCls = "info", maxWidth = 500)=> {
         const msgs = Array.isArray(messages) ? messages : [messages];
@@ -27,7 +29,14 @@ function App() {
     };
 
     return (
-        <GlobalContext.Provider value={{user, messages, setMessages}}>
+        <GlobalContext.Provider value={{
+            messages,
+            setMessages,
+            token,
+            setToken,
+            sessionInfo,
+            setSessionInfo
+        }}>
             <BrowserRouter>
                 <Routes>
                     {/* Guest routes */}
@@ -36,6 +45,7 @@ function App() {
                         <Route path="/register" element={<RegisterPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/confirm-registration" element={<ConfirmRegistration />} />
+                        <Route path="/two-factor-login/:userID/:key" element={<TwoFactorLogin />} />
                     </Route>
 
                     {/* <Route
