@@ -1,3 +1,4 @@
+import { logger } from "../framework/functions.js";
 import Model from "./Model.js";
 import { HTTPResponse } from "./types.js";
 import { Profile } from "./types.js";
@@ -30,7 +31,10 @@ class ProfileModel extends Model<'user'> {
 
             return profile as unknown as Profile;
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
+            
             throw {
                 status: err.status || 500,
                 message: err.message || "Error retrieving profile."
@@ -71,7 +75,10 @@ class ProfileModel extends Model<'user'> {
                 message: "Profile updated successfully."
             };
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
+
             throw {
                 status: err.status || 500,
                 message: err.message || "Error updating profile."

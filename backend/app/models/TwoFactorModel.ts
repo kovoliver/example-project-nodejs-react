@@ -2,6 +2,7 @@ import Model from "./Model.js";
 import { TokenPayload } from "./types.js";
 import tokenHandler from "../framework/JWToken.js";
 import { Role } from "@prisma/client";
+import { logger } from "../framework/functions.js";
 
 class TwoFactorModel extends Model<"twoFactorKey"> {
 
@@ -18,7 +19,9 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
                 data: keyData as any,
             });
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
 
             throw {
                 status: 500,
@@ -93,7 +96,9 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
                 role: user.role
             }
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
 
             throw {
                 status: 500,

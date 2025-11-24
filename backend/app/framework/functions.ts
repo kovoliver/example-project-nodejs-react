@@ -1,7 +1,9 @@
 import { fileURLToPath } from "url";
 import { dirname, resolve } from 'path';
+import * as he from 'he';
 import * as crypto from "crypto";
 import fs from "fs/promises";
+import { NextFunction, Request, Response } from "express";
 
 interface NodeModuleLike {
     filename: string;
@@ -33,7 +35,7 @@ export function createHash(password: string, salt:string):string {
 
 export function verifyHash(password: string, salt: string, hash: string): boolean {
     const hashToVerify = crypto
-        .createHmac("sha256", salt)
+        .createHmac("sha512", salt)
         .update(password)
         .digest("hex");
 
@@ -58,7 +60,7 @@ export function getMySqlDate(d:Date):string {
     return `${y}-${m}-${day} ${h}:${min}:${s}`;
 }
 
-export async function loggerFunc(msg:any, cls:string, method:string) {
+export async function logger(msg:any, cls:string, method:string) {
     try {
 
         let msgStr = ``;
@@ -80,3 +82,28 @@ export async function loggerFunc(msg:any, cls:string, method:string) {
 }
 
 export const __dirname = getDirName();
+
+export function escapeInput(input: string | null | undefined): string {
+    if (!input) return '';
+    return he.escape(input);
+}
+
+export function sanitizeObj(obj:Record<string,any>):Record<string, any> {
+    for(const keyValue of Object.entries(obj)) {
+        if(typeof keyValue[1] === "string")
+            obj[keyValue[0]] = he.escape(keyValue[1]);
+    }
+
+    return obj;
+};
+
+export function sanitizeHTTP(req:Request, res:Response, next:NextFunction) {
+    if(!req.body) return next();
+
+    for(const keyValue of Object.entries(req.body)) {
+        if(typeof keyValue[1] === "string")
+            req.body[keyValue[0]] = he.escape(keyValue[1]);
+    }
+
+    next();
+};

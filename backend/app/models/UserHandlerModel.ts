@@ -1,5 +1,5 @@
 import EmailSender from "../framework/EmailSender.js";
-import { createHash, defaultValue, randomString } from "../framework/functions.js";
+import { createHash, defaultValue, logger, randomString } from "../framework/functions.js";
 import Model from "./Model.js";
 import TwoFactorModel from "./TwoFactorModel.js";
 import { RegisterUser, Role } from "./types.js";
@@ -54,7 +54,9 @@ class UserHandlerModel extends Model<'user'> {
                 message: "User registered successfully. Please check your email to confirm your registration."
             };
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
 
             throw {
                 status: 500,
@@ -102,7 +104,9 @@ class UserHandlerModel extends Model<'user'> {
                 message: "Your registration has been successfully confirmed."
             };
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
 
             throw {
                 status: err.status||500,
@@ -156,7 +160,10 @@ class UserHandlerModel extends Model<'user'> {
                 message: "Login successful. Two-factor key has been sent to your email.",
             };
         } catch (err: any) {
-            console.log(err);
+            if(!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
+            
             throw {
                 status: err.status || 500,
                 message: err.message || "An error occurred during login.",
