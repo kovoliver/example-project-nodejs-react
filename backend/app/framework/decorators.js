@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 function createRouteDecorator(method) {
-    return function (path, ...middlewares) {
+    return (path, ...middlewares) => {
         return (target, propertyKey) => {
             const routes = Reflect.getMetadata('routes', target.constructor) || [];
             routes.push({
@@ -15,6 +15,7 @@ function createRouteDecorator(method) {
 }
 export const Get = createRouteDecorator('get');
 export const Post = createRouteDecorator('post');
+export const Patch = createRouteDecorator('patch');
 export const Put = createRouteDecorator('put');
 export const Delete = createRouteDecorator('delete');
 export function RouteController(basePath) {

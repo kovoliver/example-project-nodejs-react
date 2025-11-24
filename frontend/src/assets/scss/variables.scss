@@ -78,6 +78,7 @@ $alignItems:start, end, center;
 $flexDirections:row, row-reverse, column, column-reverse;
 $flexWraps:wrap, nowrap, wrap-reverse;
 $positions:static, relative, absolute, fixed, sticky;
+$textDecorations:none, underline, overline, line-through;
 
 $cursors: pointer, default, wait, text, move, not-allowed, crosshair, progress, 
 e-resize, ne-resize, nw-resize, n-resize, se-resize, sw-resize, s-resize, w-resize, 

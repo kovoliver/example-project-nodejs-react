@@ -44,3 +44,13 @@ nav a {
     justify-content: center;
     align-items: center;
 }
+
+.user-layout {
+    display:grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap:20px;
+
+    @media screen and (max-width:map-get($breakpoints, "md")) {
+        grid-template-columns: 205px auto;
+    }
+}

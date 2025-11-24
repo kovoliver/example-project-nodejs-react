@@ -29,6 +29,7 @@
 @include list-classes("pos", "position", $positions);
 @include list-classes("cursor", "cursor", $cursors);
 @include list-classes("text", "text-align", $textAligns);
+@include list-classes("text-deco", "text-decoration", $textDecorations);
 
 @include map-classes("radius", "border-radius", $radiuses);
 @include map-classes("shadow", "box-shadow", $shadows);
@@ -46,6 +47,9 @@
 @include loop-classes("minh", min-height, 5, 1000, 5, px);
 @include loop-classes("minwp", min-width, 5, 100, 5, "%");
 @include loop-classes("maxwp", max-width, 5, 100, 5, "%");
+
+@include loop-classes("vw", width, 2, 100, 2, "vw");
+@include loop-classes("vh", height, 2, 100, 2, "vh");
 
 @include pseudo-classes("color", "color", $colors, "hover");
 @include pseudo-classes("color", "color", $colors, "active");

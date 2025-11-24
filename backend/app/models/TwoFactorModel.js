@@ -1,10 +1,8 @@
 import Model from "./Model.js";
-import JWToken from "../framework/JWToken.js";
+import tokenHandler from "../framework/JWToken.js";
 class TwoFactorModel extends Model {
-    tokenHandler;
     constructor() {
         super("twoFactorKey", ["userID", "key"]);
-        this.tokenHandler = new JWToken();
     }
     async createKey(userID, key) {
         try {
@@ -69,8 +67,8 @@ class TwoFactorModel extends Model {
                 firstName: keyData.userData?.firstName,
                 lastName: keyData.userData?.lastName
             };
-            const accessToken = this.tokenHandler.createToken(user, "ACCESS");
-            const refreshToken = this.tokenHandler.createToken(user, "REFRESH");
+            const accessToken = tokenHandler.createToken(user, "ACCESS");
+            const refreshToken = tokenHandler.createToken(user, "REFRESH");
             return {
                 status: 200,
                 accessToken: accessToken,

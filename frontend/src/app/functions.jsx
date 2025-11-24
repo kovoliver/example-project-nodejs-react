@@ -58,12 +58,6 @@ export const fetchAPI = async (path, settings = {}, gc = null) => {
             data: json.data || null
         };
     } catch (err) {
-        if (err.status === 401) {
-            console.warn("Unauthorized, token might be expired.");
-            localStorage.removeItem("token");
-            localStorage.removeItem("sessionInfo");
-        }
-
         throw err;
     }
 };

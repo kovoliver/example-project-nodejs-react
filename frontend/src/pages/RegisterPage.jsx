@@ -4,6 +4,7 @@ import { fetchAPI, handleChange, validateForm } from "../app/functions";
 import { sBaseUrl } from "../app/url";
 import { regSchema } from "../app/schemas";
 import { GlobalContext } from "../App";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function RegisterPage() {
         pass:"",
         passAgain:""
     });
+    const navigate = useNavigate();
     const gc = useContext(GlobalContext);
 
     const handleSubmit = async (e) => {
@@ -37,11 +39,7 @@ export default function RegisterPage() {
             
             gc.setMessages(response.message, "success");
 
-            setFormData({
-                email:"",
-                pass:"",
-                passAgain:""
-            });
+            navigate("/login");
         } catch (err) {
             gc.setMessages(err.message||["Error during registration!"], "error");
         }

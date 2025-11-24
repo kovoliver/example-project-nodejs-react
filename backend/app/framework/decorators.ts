@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { RouteDefinition } from '../models/types.js';
 
-function createRouteDecorator(method: 'get' | 'post' | 'put' | 'delete') {
-    return function (path: string, ...middlewares: Function[]): MethodDecorator {
+function createRouteDecorator(method: 'get' | 'post' | 'put' | 'patch' | 'delete') {
+    return  (path: string, ...middlewares: Function[]): MethodDecorator => {
         return (target, propertyKey) => {
             const routes: RouteDefinition[] = Reflect.getMetadata('routes', target.constructor) || [];
             routes.push({
@@ -19,6 +19,7 @@ function createRouteDecorator(method: 'get' | 'post' | 'put' | 'delete') {
 
 export const Get = createRouteDecorator('get');
 export const Post = createRouteDecorator('post');
+export const Patch = createRouteDecorator('patch');
 export const Put = createRouteDecorator('put');
 export const Delete = createRouteDecorator('delete');
 

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import GuestLayout from "./layouts/GuestLayout";
 import RegisterPage from "./pages/RegisterPage";
@@ -11,6 +11,7 @@ import ConfirmRegistration from "./pages/ConfirmRegistration";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'; 
 import TwoFactorLogin from "./pages/TwoFactorLogin";
+import ProfilePage from "./pages/common/ProfilePage";
 
 library.add(
     faCircleXmark
@@ -48,13 +49,11 @@ function App() {
                         <Route path="/two-factor-login/:userID/:key" element={<TwoFactorLogin />} />
                     </Route>
 
-                    {/* <Route
-                        element={
-                            <UserLayout />
-                        }
-                    >
-                        <Route path="/dashboard" element={<UserDashboard />} />
+                    <Route element={<UserLayout />}>
+                        <Route path="/user/profile" element={<ProfilePage />} />
                     </Route>
+
+                    {/* 
 
                     <Route
                         element={

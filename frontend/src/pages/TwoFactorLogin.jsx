@@ -5,10 +5,10 @@ import { fetchAPI } from "../app/functions";
 import { GlobalContext } from "../App";
 
 const TwoFactorLogin = () => {
-    const navigate = useNavigate();
     const [status, setStatus] = useState("pending");
     const [message, setMessage] = useState("Confirming your registration...");
     const {userID, key} = useParams();
+    const navigate = useNavigate();
     const gc = useContext(GlobalContext);
 
     const login = async () => {

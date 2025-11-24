@@ -12,7 +12,6 @@ export class TwoFactorController extends Controller<TwoFactorModel> {
         super(new TwoFactorModel(), twoFactorKeySchema);
     }
 
-
     @Get("/login/:userID/:key")
     public async twoFactorLogin(req: Request, res: Response) {
         if (this.schema === null) {

@@ -1,15 +1,12 @@
 import Model from "./Model.js";
 import { TokenPayload } from "./types.js";
-import JWToken from "../framework/JWToken.js";
+import tokenHandler from "../framework/JWToken.js";
 import { Role } from "@prisma/client";
 
 class TwoFactorModel extends Model<"twoFactorKey"> {
-    private tokenHandler: JWToken;
 
     constructor() {
         super("twoFactorKey", ["userID", "key"]);
-
-        this.tokenHandler = new JWToken();
     }
 
     async createKey(userID: number, key: string): Promise<void> {
@@ -81,11 +78,11 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
                 lastName: keyData.userData?.lastName as string
             };
 
-            const accessToken = this.tokenHandler.createToken(
+            const accessToken = tokenHandler.createToken(
                 user, "ACCESS"
             );
 
-            const refreshToken = this.tokenHandler.createToken(
+            const refreshToken = tokenHandler.createToken(
                 user, "REFRESH"
             );
 

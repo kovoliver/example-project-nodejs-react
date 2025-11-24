@@ -9,11 +9,13 @@ export default function UserLayout() {
     const gc = useContext(GlobalContext);
 
     return (
-        <ProtectedRoute isAllowed={gc.user.loggedIn}>
+        <ProtectedRoute isAllowed={gc.sessionInfo !== null}>
             <div className="user-layout">
-                <Messages/>
                 <UserNav />
-                <Outlet />
+                <div>
+                    <Messages/>
+                    <Outlet />
+                </div>
             </div>
         </ProtectedRoute>
     );

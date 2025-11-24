@@ -35,7 +35,7 @@ class JWToken {
     authenticate(req, res, next) {
         const authHeader = req.headers['authorization'];
         const token = authHeader?.split(" ")[1] ?? null;
-        if (!token && !req.cookies?.refreshToken) {
+        if (!token && !req.cookies?.refresh_token) {
             return res.status(401).json({ message: 'A rendszer nem tudott azonosítani!' });
         }
         let decoded = null;
@@ -43,10 +43,16 @@ class JWToken {
         if (token) {
             decoded = this.verifyToken(token, "ACCESS");
         }
-        if (!decoded && req.cookies?.refreshToken) {
-            decoded = this.verifyToken(req.cookies.refreshToken, "REFRESH");
+        if (!decoded && req.cookies?.refresh_token) {
+            decoded = this.verifyToken(req.cookies.refresh_token, "REFRESH");
+            const user = {
+                userID: decoded?.userID,
+                role: decoded?.role,
+                firstName: decoded?.firstName,
+                lastName: decoded?.lastName
+            };
             if (decoded) {
-                newAccessToken = this.createToken(decoded, "ACCESS");
+                newAccessToken = this.createToken(user, "ACCESS");
             }
         }
         if (!decoded) {
@@ -60,4 +66,6 @@ class JWToken {
         next();
     }
 }
-export default JWToken;
+const tokenHandler = new JWToken();
+export { JWToken };
+export default tokenHandler;

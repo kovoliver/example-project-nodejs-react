@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { sBaseUrl } from "../app/url";
+import { useNavigate } from "react-router-dom";
 
 const ConfirmRegistration = () => {
-    const navigate = useNavigate();
     const [status, setStatus] = useState("pending");
     const [message, setMessage] = useState("Confirming your registration...");
     const [countdown, setCountdown] = useState(5);
     const queryParams = new URLSearchParams(window.location.search);
     const userID = queryParams.get("userID");
     const code = queryParams.get("code");
+    const navigate = useNavigate();
 
     const confirm = async () => {
         try {
@@ -57,7 +57,7 @@ const ConfirmRegistration = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [status, navigate]);
+    }, [status]);
 
     return (
         <div style={{ textAlign: "center", marginTop: "80px" }}>
