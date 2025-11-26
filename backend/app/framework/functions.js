@@ -1,7 +1,11 @@
 import { fileURLToPath } from "url";
 import { dirname, resolve } from 'path';
+import he from 'he';
 import * as crypto from "crypto";
 import fs from "fs/promises";
+export function isNumeric(value) {
+    return !isNaN(parseInt(value));
+}
 export function undefinedOrNull(value) {
     return value === undefined || value === null;
 }
@@ -18,14 +22,14 @@ export function getDirName(meta) {
 }
 export function createHash(password, salt) {
     const hash = crypto
-        .createHmac("sha256", salt)
+        .createHmac("sha512", salt)
         .update(password)
         .digest("hex");
     return hash;
 }
 export function verifyHash(password, salt, hash) {
     const hashToVerify = crypto
-        .createHmac("sha256", salt)
+        .createHmac("sha512", salt)
         .update(password)
         .digest("hex");
     return hash === hashToVerify;
@@ -45,7 +49,7 @@ export function getMySqlDate(d) {
     const s = numberWithZero(d.getSeconds());
     return `${y}-${m}-${day} ${h}:${min}:${s}`;
 }
-export async function loggerFunc(msg, cls, method) {
+export async function logger(msg, cls, method) {
     try {
         let msgStr = ``;
         if (typeof msg === 'object') {
@@ -65,3 +69,37 @@ export async function loggerFunc(msg, cls, method) {
     }
 }
 export const __dirname = getDirName();
+export function escapeInput(input) {
+    if (!input)
+        return '';
+    return he.escape(input);
+}
+export function sanitizeObj(obj) {
+    for (const keyValue of Object.entries(obj)) {
+        if (typeof keyValue[1] === "string")
+            obj[keyValue[0]] = he.escape(keyValue[1]);
+    }
+    return obj;
+}
+;
+export function sanitizeHTTP(req, res, next) {
+    if (!req.body)
+        return next();
+    for (const keyValue of Object.entries(req.body)) {
+        if (typeof keyValue[1] === "string")
+            req.body[keyValue[0]] = he.escape(keyValue[1]);
+    }
+    next();
+}
+;
+export const validateSchema = (schema) => {
+    return (req, res, next) => {
+        if (!req.body || !schema)
+            return next();
+        const { error } = schema.validate(req.body, { abortEarly: false });
+        if (error) {
+            return res.status(400).json({ message: error.details.map(e => e.message) });
+        }
+        next();
+    };
+};

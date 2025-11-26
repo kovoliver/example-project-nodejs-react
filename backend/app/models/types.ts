@@ -9,17 +9,17 @@ export enum Role {
 }
 
 export enum Title {
-    MR = "MR",
-    MS = "MS",
-    MRS = "MRS",
-    DR = "DR",
+    MR = "Mr",
+    MS = "Ms",
+    MRS = "Mrs",
+    DR = "Dr",
 }
 
 export enum StreetType {
-    STREET = "STREET",
-    AVENUE = "AVENUE",
-    ROAD = "ROAD",
-    BLVD = "BLVD",
+    STREET = "street",
+    AVENUE = "avenue",
+    ROAD = "road",
+    BLVD = "blvd",
 }
 
 export enum ReportType {

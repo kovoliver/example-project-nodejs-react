@@ -9,17 +9,17 @@ export var Role;
 })(Role || (Role = {}));
 export var Title;
 (function (Title) {
-    Title["MR"] = "MR";
-    Title["MS"] = "MS";
-    Title["MRS"] = "MRS";
-    Title["DR"] = "DR";
+    Title["MR"] = "Mr";
+    Title["MS"] = "Ms";
+    Title["MRS"] = "Mrs";
+    Title["DR"] = "Dr";
 })(Title || (Title = {}));
 export var StreetType;
 (function (StreetType) {
-    StreetType["STREET"] = "STREET";
-    StreetType["AVENUE"] = "AVENUE";
-    StreetType["ROAD"] = "ROAD";
-    StreetType["BLVD"] = "BLVD";
+    StreetType["STREET"] = "street";
+    StreetType["AVENUE"] = "avenue";
+    StreetType["ROAD"] = "road";
+    StreetType["BLVD"] = "blvd";
 })(StreetType || (StreetType = {}));
 export var ReportType;
 (function (ReportType) {

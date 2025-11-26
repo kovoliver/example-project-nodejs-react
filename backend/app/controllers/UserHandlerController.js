@@ -11,30 +11,14 @@ import Controller from "./Controller.js";
 import { userSchema } from "./validation.js";
 import UserHandlerModel from "../models/UserHandlerModel.js";
 import { Get, Post, RouteController } from "../framework/decorators.js";
+import { sanitizeHTTP, validateSchema } from "../framework/functions.js";
 let UserHandlerController = class UserHandlerController extends Controller {
     constructor() {
-        super(new UserHandlerModel(), userSchema);
+        super(new UserHandlerModel());
     }
     async register(req, res) {
-        if (this.schema === null) {
-            return res.status(503).json({ message: "A szolgáltatás ideiglenesen nem érhető el!" });
-        }
-        ;
         try {
-            const { error, value } = this.schema.validate(req.body, { abortEarly: false });
-            let messages = [];
-            delete value.passAgain;
-            const exists = await this.model?.checkExists("email", value.email);
-            messages = error ? error.details.map((d) => d.message) : [];
-            if (exists)
-                messages.push("A megadott email cím már regisztrálva van egy másik felhasználóhoz!");
-            if (messages.length > 0) {
-                return res.status(400).json({
-                    status: 400,
-                    message: messages
-                });
-            }
-            const response = await this.model.register(value);
+            const response = await this.model.register(req.body);
             return res.status(response.status).json(response);
         }
         catch (err) {
@@ -88,7 +72,7 @@ let UserHandlerController = class UserHandlerController extends Controller {
     }
 };
 __decorate([
-    Post("/register"),
+    Post("/register", sanitizeHTTP, validateSchema(userSchema)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

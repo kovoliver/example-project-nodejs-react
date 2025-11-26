@@ -1,9 +1,7 @@
 class Controller {
-    schema;
     model;
-    constructor(model, schema = null) {
+    constructor(model) {
         this.model = model;
-        this.schema = schema;
     }
 }
 export default Controller;

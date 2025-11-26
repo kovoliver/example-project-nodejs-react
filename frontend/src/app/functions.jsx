@@ -96,3 +96,7 @@ export const handleChange = (e, setForm, setErrors = null, fieldSchema = null) =
         setErrors(prev => ({ ...prev, [name]: errMsg }));
     }
 };
+
+export function isNumeric(value) {
+    return !isNaN(parseInt(value));
+}

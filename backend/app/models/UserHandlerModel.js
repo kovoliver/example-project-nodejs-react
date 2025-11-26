@@ -1,5 +1,5 @@
 import EmailSender from "../framework/EmailSender.js";
-import { createHash, defaultValue, randomString } from "../framework/functions.js";
+import { createHash, defaultValue, logger, randomString } from "../framework/functions.js";
 import Model from "./Model.js";
 import TwoFactorModel from "./TwoFactorModel.js";
 import { Role } from "./types.js";
@@ -43,7 +43,9 @@ class UserHandlerModel extends Model {
             };
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: 500,
                 message: err.message || "An error occurred during registration"
@@ -86,7 +88,9 @@ class UserHandlerModel extends Model {
             };
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: err.status || 500,
                 message: err.message || "An error occurred during confirmation."
@@ -131,7 +135,9 @@ class UserHandlerModel extends Model {
             };
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: err.status || 500,
                 message: err.message || "An error occurred during login.",

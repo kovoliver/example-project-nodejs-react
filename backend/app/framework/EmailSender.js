@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { loggerFunc } from './functions.js';
+import { logger } from './functions.js';
 import dotenv from 'dotenv';
 dotenv.config();
 class EmailSender {
@@ -23,7 +23,7 @@ class EmailSender {
         }
         catch (error) {
             console.error('Error sending email:', error);
-            loggerFunc(error, "EmailSender", "sendMail");
+            logger(error, "EmailSender", "sendMail");
             return false;
         }
     }

@@ -19,17 +19,17 @@ enum Role {
 }
 
 enum Title {
-  MR
-  MS
-  MRS
-  DR
+  Mr
+  Ms
+  Mrs
+  Dr
 }
 
 enum StreetType {
-  STREET
-  AVENUE
-  ROAD
-  BLVD
+  street
+  avenue
+  road
+  blvd
 }
 
 enum ReportType {

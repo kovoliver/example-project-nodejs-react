@@ -25,10 +25,6 @@ export const userSchema: Joi.ObjectSchema = Joi.object({
 });
 
 export const profileSchema: Joi.ObjectSchema = Joi.object({
-    userID: Joi.number().integer().required().messages({
-        "number.base": "A felhasználói azonosítónak számnak kell lennie!",
-        "any.required": "A felhasználói azonosító megadása kötelező!"
-    }),
     title: Joi.string().valid(...Object.values(Title)).optional().messages({
         "string.base": "A titulusnak szöveg típusúnak kell lennie!",
         "any.only": "A titulus típusa érvénytelen!"
@@ -53,17 +49,16 @@ export const profileSchema: Joi.ObjectSchema = Joi.object({
         "string.base": "Az utca típusának szöveg típusúnak kell lennie!",
         "any.only": "Érvénytelen utca típust adott meg!"
     }),
-    houseNumber: Joi.string().required().messages({
+    houseNumber: Joi.string().min(1).max(100000).required().messages({
         "string.base": "A házszámnak szöveg típusúnak kell lennie!"
     }),
-    floorNumber: Joi.string().optional().messages({
+    floorNumber: Joi.string().min(1).max(100000).optional().messages({
         "string.base": "Az emeletszámnak szöveg típusúnak kell lennie!"
     }),
-    doorNumber: Joi.string().optional().messages({
+    doorNumber: Joi.string().min(1).max(5).optional().messages({
         "string.base": "Az ajtószámnak szöveg típusúnak kell lennie!"
     })
 });
-
 
 export const carSchema: Joi.ObjectSchema = Joi.object({
     carID: Joi.number().integer().optional().messages({
@@ -197,5 +192,24 @@ export const twoFactorKeySchema:Joi.ObjectSchema = Joi.object({
     key:Joi.string().required().messages({
         "any.required":"A kulcs mező nem található!",
         "any.base":"A kulcs mezőnek karakterláncnak kell lennie!"
+    })
+});
+
+export const newPassSchema:Joi.ObjectSchema = Joi.object({
+    pass: Joi.string().min(6).required().messages({
+        "string.base": "A jelszónak szöveg típusúnak kell lennie!",
+        "string.min": "A jelszónak legalább 6 karakter hosszúnak kell lennie!",
+        "any.required": "A jelszó megadása kötelező!"
+    }),
+    newPass: Joi.string().min(6).required().messages({
+        "string.base": "A jelszónak szöveg típusúnak kell lennie!",
+        "string.min": "A jelszónak legalább 6 karakter hosszúnak kell lennie!",
+        "any.required": "A jelszó megadása kötelező!"
+    }),
+    newPassAgain: Joi.string().valid(Joi.ref("newPass")).required().empty("")
+    .messages({
+        "any.only": "A két jelszó nem egyezik meg!",
+        "string.empty": "Kérjük ismételje meg a jelszót.",
+        "any.required": "Kérjük ismételje meg a jelszót.",
     })
 });

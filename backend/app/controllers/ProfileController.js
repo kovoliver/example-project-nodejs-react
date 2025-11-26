@@ -8,13 +8,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import Controller from "./Controller.js";
-import { profileSchema } from "./validation.js";
+import { profileSchema, newPassSchema } from "./validation.js";
 import ProfileModel from "../models/ProfileModel.js";
 import { Get, Patch, RouteController } from "../framework/decorators.js";
 import tokenHandler from "../framework/JWToken.js";
+import { sanitizeHTTP } from "../framework/functions.js";
+import { validateSchema } from "../framework/functions.js";
 let ProfileController = class ProfileController extends Controller {
     constructor() {
-        super(new ProfileModel(), profileSchema);
+        super(new ProfileModel());
     }
     async getProfile(req, res) {
         try {
@@ -31,15 +33,24 @@ let ProfileController = class ProfileController extends Controller {
         }
     }
     async updateProfile(req, res) {
-        if (this.schema === null) {
-            return res.status(503).json({ message: "A szolgáltatás ideiglenesen nem érhető el!" });
-        }
         try {
-            const { value, error } = this.schema?.validate(req.body, { abortEarly: false });
-            if (error) {
-                return res.status(400).json({ message: error.details });
-            }
-            const response = await this.model.updateProfile(value);
+            const profileData = req.body;
+            const userID = req.user.userID;
+            const response = await this.model.updateProfile(profileData, userID);
+            return res.status(response.status).json(response);
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+    async changePassword(req, res) {
+        try {
+            const userID = req.user.userID;
+            const response = await this.model.changePassword(userID, req.body.pass.trim(), req.body.newPass.trim());
             return res.status(response.status).json(response);
         }
         catch (err) {
@@ -58,11 +69,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "getProfile", null);
 __decorate([
-    Patch("/update", tokenHandler.authenticate.bind(tokenHandler)),
+    Patch("/update", tokenHandler.authenticate.bind(tokenHandler), sanitizeHTTP, validateSchema(profileSchema)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "updateProfile", null);
+__decorate([
+    Patch("/update-pass", tokenHandler.authenticate.bind(tokenHandler), validateSchema(newPassSchema)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "changePassword", null);
 ProfileController = __decorate([
     RouteController("/profile"),
     __metadata("design:paramtypes", [])

@@ -3,38 +3,18 @@ import { userSchema } from "./validation.js";
 import UserHandlerModel from "../models/UserHandlerModel.js";
 import { HTTPResponse } from "../models/types.js";
 import { Get, Post, RouteController } from "../framework/decorators.js";
+import { sanitizeHTTP, validateSchema } from "../framework/functions.js";
 
 @RouteController("/user")
 class UserHandlerController extends Controller<UserHandlerModel> {
     constructor() {
-        super(new UserHandlerModel() as UserHandlerModel, userSchema);
+        super(new UserHandlerModel() as UserHandlerModel);
     }
 
-    @Post("/register")
+    @Post("/register", sanitizeHTTP, validateSchema(userSchema))
     public async register(req: any, res: any) {
-        if (this.schema === null) {
-            return res.status(503).json({ message: "A szolgáltatás ideiglenesen nem érhető el!" });
-        };
-
         try {
-            const { error, value } = this.schema.validate(req.body, { abortEarly: false });
-            let messages = [];
-
-            delete value.passAgain;
-            const exists = await this.model?.checkExists("email", value.email);
-
-            messages = error ? error.details.map((d: any) => d.message) : [];
-
-            if (exists) messages.push("A megadott email cím már regisztrálva van egy másik felhasználóhoz!");
-
-            if (messages.length > 0) {
-                return res.status(400).json({
-                    status: 400,
-                    message: messages
-                });
-            }
-
-            const response: HTTPResponse = await this.model.register(value);
+            const response: HTTPResponse = await this.model.register(req.body);
 
             return res.status(response.status).json(response);
         } catch (err: any) {

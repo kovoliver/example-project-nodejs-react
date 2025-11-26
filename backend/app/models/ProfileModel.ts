@@ -1,7 +1,8 @@
-import { logger } from "../framework/functions.js";
+import { logger, verifyHash } from "../framework/functions.js";
 import Model from "./Model.js";
 import { HTTPResponse } from "./types.js";
 import { Profile } from "./types.js";
+import { createHash } from "../framework/functions.js";
 
 class ProfileModel extends Model<'user'> {
     constructor() {
@@ -43,12 +44,12 @@ class ProfileModel extends Model<'user'> {
     }
 
 
-    async updateProfile(profile: Profile): Promise<HTTPResponse> {
+    async updateProfile(profile: Profile, userID:number): Promise<HTTPResponse> {
         try {
             this.checkFriendlyFields(profile);
 
             const updatedProfile = await this.model.update({
-                where: { userID: profile.userID },
+                where: { userID },
                 data: {
                     title: profile.title ?? undefined,
                     firstName: profile.firstName,
@@ -82,6 +83,43 @@ class ProfileModel extends Model<'user'> {
             throw {
                 status: err.status || 500,
                 message: err.message || "Error updating profile."
+            };
+        }
+    }
+
+    async changePassword(userID: number, currentPass: string, newPass: string): Promise<HTTPResponse> {
+        try {
+            const user = await this.model.findUnique({
+                where: { userID },
+                select: { pass: true, salt:true }
+            });
+
+            if (!user) {
+                throw { status: 404, message: "User not found." };
+            }
+
+            const isMatch = verifyHash(currentPass, user.salt as string, user.pass);
+
+            if (!isMatch) {
+                throw { status: 401, message: "Current password is incorrect." };
+            }
+
+            const newHashed = createHash(newPass, user.salt as string);
+
+            await this.model.update({
+                where: { userID },
+                data: { pass: newHashed }
+            });
+
+            return { status: 200, message: "Password changed successfully." };
+        } catch (err: any) {
+            if(!err.status) {
+                logger(err, "ProfileModel", "changePassword");
+            }
+
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error changing password."
             };
         }
     }

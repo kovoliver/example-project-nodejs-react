@@ -1,4 +1,6 @@
+import { logger, verifyHash } from "../framework/functions.js";
 import Model from "./Model.js";
+import { createHash } from "../framework/functions.js";
 class ProfileModel extends Model {
     constructor() {
         super('user', [
@@ -25,18 +27,20 @@ class ProfileModel extends Model {
             return profile;
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: err.status || 500,
                 message: err.message || "Error retrieving profile."
             };
         }
     }
-    async updateProfile(profile) {
+    async updateProfile(profile, userID) {
         try {
             this.checkFriendlyFields(profile);
             const updatedProfile = await this.model.update({
-                where: { userID: profile.userID },
+                where: { userID },
                 data: {
                     title: profile.title ?? undefined,
                     firstName: profile.firstName,
@@ -62,10 +66,42 @@ class ProfileModel extends Model {
             };
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: err.status || 500,
                 message: err.message || "Error updating profile."
+            };
+        }
+    }
+    async changePassword(userID, currentPass, newPass) {
+        try {
+            const user = await this.model.findUnique({
+                where: { userID },
+                select: { pass: true, salt: true }
+            });
+            if (!user) {
+                throw { status: 404, message: "User not found." };
+            }
+            const isMatch = verifyHash(currentPass, user.salt, user.pass);
+            if (!isMatch) {
+                throw { status: 401, message: "Current password is incorrect." };
+            }
+            const newHashed = createHash(newPass, user.salt);
+            await this.model.update({
+                where: { userID },
+                data: { pass: newHashed }
+            });
+            return { status: 200, message: "Password changed successfully." };
+        }
+        catch (err) {
+            if (!err.status) {
+                logger(err, "ProfileModel", "changePassword");
+            }
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error changing password."
             };
         }
     }

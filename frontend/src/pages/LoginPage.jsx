@@ -28,7 +28,7 @@ export default function LoginPage() {
                 pass: ""
             });
         } catch (err) {
-            gc.setMessages(res.message, "error");
+            gc.setMessages(err.message||"Please, try again later!", "error");
         }
     };
 

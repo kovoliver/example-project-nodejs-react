@@ -1,5 +1,6 @@
 import Model from "./Model.js";
 import tokenHandler from "../framework/JWToken.js";
+import { logger } from "../framework/functions.js";
 class TwoFactorModel extends Model {
     constructor() {
         super("twoFactorKey", ["userID", "key"]);
@@ -13,7 +14,9 @@ class TwoFactorModel extends Model {
             });
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: 500,
                 message: err.message || "Error while creating two-factor key.",
@@ -77,7 +80,9 @@ class TwoFactorModel extends Model {
             };
         }
         catch (err) {
-            console.log(err);
+            if (!err.status) {
+                logger(err, "ProfileModel", "updateProfile");
+            }
             throw {
                 status: 500,
                 message: err.message || "Error while creating two-factor key.",
