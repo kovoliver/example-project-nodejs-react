@@ -7,7 +7,7 @@ import { createHash } from "../framework/functions.js";
 class ProfileModel extends Model<'user'> {
     constructor() {
         super('user', [
-            'email', 'title', 'firstName', 'lastName', 
+            'email', 'title', 'firstName', 'lastName',
             'zip', 'settlement', 'street', 'streetType',
             'houseNumber', 'floorNumber', 'doorNumber'
         ]);
@@ -32,10 +32,10 @@ class ProfileModel extends Model<'user'> {
 
             return profile as unknown as Profile;
         } catch (err: any) {
-            if(!err.status) {
+            if (!err.status) {
                 logger(err, "ProfileModel", "updateProfile");
             }
-            
+
             throw {
                 status: err.status || 500,
                 message: err.message || "Error retrieving profile."
@@ -44,7 +44,7 @@ class ProfileModel extends Model<'user'> {
     }
 
 
-    async updateProfile(profile: Profile, userID:number): Promise<HTTPResponse> {
+    async updateProfile(profile: Profile, userID: number): Promise<HTTPResponse> {
         try {
             this.checkFriendlyFields(profile);
 
@@ -76,7 +76,7 @@ class ProfileModel extends Model<'user'> {
                 message: "Profile updated successfully."
             };
         } catch (err: any) {
-            if(!err.status) {
+            if (!err.status) {
                 logger(err, "ProfileModel", "updateProfile");
             }
 
@@ -87,33 +87,46 @@ class ProfileModel extends Model<'user'> {
         }
     }
 
+    private async checkPass(userID: number, pass: string):Promise<{ pass: string, salt: string | null }> {
+        const user = await this.model.findUnique({
+            where: { userID },
+            select: { pass: true, salt: true }
+        });
+
+        if (!user) {
+            throw { status: 404, message: "User not found." };
+        }
+
+        const isMatch = verifyHash(pass, user.salt as string, user.pass);
+
+        if (!isMatch) {
+            throw { status: 401, message: "Current password is incorrect." };
+        }
+
+        return user;
+    }
+
     async changePassword(userID: number, currentPass: string, newPass: string): Promise<HTTPResponse> {
         try {
-            const user = await this.model.findUnique({
-                where: { userID },
-                select: { pass: true, salt:true }
-            });
-
-            if (!user) {
-                throw { status: 404, message: "User not found." };
-            }
-
-            const isMatch = verifyHash(currentPass, user.salt as string, user.pass);
-
-            if (!isMatch) {
-                throw { status: 401, message: "Current password is incorrect." };
-            }
+            const user = await this.checkPass(userID, currentPass);
 
             const newHashed = createHash(newPass, user.salt as string);
 
-            await this.model.update({
+            const response = await this.model.update({
                 where: { userID },
                 data: { pass: newHashed }
             });
 
+            if (!response) {
+                throw {
+                    status: 503,
+                    message: "Service temporarily unavailable!"
+                }
+            }
+
             return { status: 200, message: "Password changed successfully." };
         } catch (err: any) {
-            if(!err.status) {
+            if (!err.status) {
                 logger(err, "ProfileModel", "changePassword");
             }
 
@@ -123,6 +136,40 @@ class ProfileModel extends Model<'user'> {
             };
         }
     }
+
+    async changeEmail(userID: number, email: string, pass: string): Promise<HTTPResponse> {
+        try {
+            await this.checkPass(userID, pass);
+
+            const response = await this.model.update({
+                where: { userID },
+                data: { email }
+            });
+
+            if (!response) {
+                throw {
+                    status: 503,
+                    message: "Service temporarily unavailable!"
+                }
+            }
+
+            return {
+                status: 200,
+                message: "Updated successfully!"
+            }
+        } catch (err: any) {
+            if (!err.status) {
+                logger(err, "ProfileModel", "changePassword");
+            }
+
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error changing password."
+            };
+        }
+    }
+
+
 };
 
 export default ProfileModel;

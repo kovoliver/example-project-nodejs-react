@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import tokenHandler from './app/framework/JWToken.js';
 dotenv.config();
 
 import UserHandlerController from "./app/controllers/UserHandlerController.js";

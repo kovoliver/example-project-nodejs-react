@@ -75,25 +75,63 @@ class ProfileModel extends Model {
             };
         }
     }
+    async checkPass(userID, pass) {
+        const user = await this.model.findUnique({
+            where: { userID },
+            select: { pass: true, salt: true }
+        });
+        if (!user) {
+            throw { status: 404, message: "User not found." };
+        }
+        const isMatch = verifyHash(pass, user.salt, user.pass);
+        if (!isMatch) {
+            throw { status: 401, message: "Current password is incorrect." };
+        }
+        return user;
+    }
     async changePassword(userID, currentPass, newPass) {
         try {
-            const user = await this.model.findUnique({
-                where: { userID },
-                select: { pass: true, salt: true }
-            });
-            if (!user) {
-                throw { status: 404, message: "User not found." };
-            }
-            const isMatch = verifyHash(currentPass, user.salt, user.pass);
-            if (!isMatch) {
-                throw { status: 401, message: "Current password is incorrect." };
-            }
+            const user = await this.checkPass(userID, currentPass);
             const newHashed = createHash(newPass, user.salt);
-            await this.model.update({
+            const response = await this.model.update({
                 where: { userID },
                 data: { pass: newHashed }
             });
+            if (!response) {
+                throw {
+                    status: 503,
+                    message: "Service temporarily unavailable!"
+                };
+            }
             return { status: 200, message: "Password changed successfully." };
+        }
+        catch (err) {
+            if (!err.status) {
+                logger(err, "ProfileModel", "changePassword");
+            }
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error changing password."
+            };
+        }
+    }
+    async changeEmail(userID, email, pass) {
+        try {
+            await this.checkPass(userID, pass);
+            const response = await this.model.update({
+                where: { userID },
+                data: { email }
+            });
+            if (!response) {
+                throw {
+                    status: 503,
+                    message: "Service temporarily unavailable!"
+                };
+            }
+            return {
+                status: 200,
+                message: "Updated successfully!"
+            };
         }
         catch (err) {
             if (!err.status) {

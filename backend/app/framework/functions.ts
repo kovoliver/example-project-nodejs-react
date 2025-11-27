@@ -113,9 +113,20 @@ export function sanitizeHTTP(req: Request, res: Response, next: NextFunction) {
     next();
 };
 
-export const validateSchema = (schema: Joi.ObjectSchema|null) => {
+export function trimObject(obj: Record<string, any>): Record<string, any> {
+    for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === "string") {
+            obj[key] = value.trim();
+        }
+    }
+
+    return obj;
+}
+
+export const validateSchema = (schema: Joi.ObjectSchema|null, trim:boolean = true) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!req.body || !schema) return next();
+        req.body = trim ? trimObject(req.body) : req.body;
 
         const { error } = schema.validate(req.body, { abortEarly: false });
 

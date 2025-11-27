@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { fetchAPI, handleChange as handleFieldChange, validateField, validateForm } from "../../app/functions";
+import { fetchAPI, handleChange as handleFieldChange, setSingleInput, validateField, validateForm } from "../../app/functions";
 import { sBaseUrl } from "../../app/url";
 import { GlobalContext } from "../../App";
 import NumberInput from "../../components/NumberInput";
@@ -28,6 +28,7 @@ export default function ProfilePage() {
     });
     const [newPassErrors, setNewPassErrors] = useState({});
     const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState(null);
     const [pass, setPass] = useState("");
 
     const getProfile = async () => {
@@ -38,6 +39,7 @@ export default function ProfilePage() {
             });
 
             const email = response.data.email;
+            setEmail(email);
             const pd = response.data;
             delete pd.email;
 
@@ -105,6 +107,47 @@ export default function ProfilePage() {
             console.log(err);
             gc.setMessages(err.message || "Error during updating password!", "error");
         }
+    };
+
+    const updatePass = async ()=> {
+         try {
+            const response = await fetchAPI(`${sBaseUrl}/profile/update-email`, {
+                method: "PATCH",
+                headers: {
+                    "authorization": `Bearer ${gc.token}`,
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({email, pass})
+            });
+
+            setPass("");
+
+            gc.setMessages(response.message || "Password updated successfully!", "success");
+        } catch (err) {
+            console.log(err);
+            gc.setMessages(err.message || "Error during updating password!", "error");
+        }
+    };
+
+    const uploadProfileImage = async (input)=> {
+        const files = input.files;
+
+        const fd = new FormData();
+
+        for(const file of files) {
+            fd.append("profileImage", file);
+        }
+
+        console.log(fd.getAll("profileImage"));
+
+        const response = await fetchAPI(`${sBaseUrl}/profile/profile-image`, {
+            method:"POST",
+            body:fd
+        });
+
+        console.log(response);
+        input.value = "";
     };
 
     useEffect(() => {
@@ -322,11 +365,11 @@ export default function ProfilePage() {
                                 <div className="mb-xs">
                                     <b>Email</b>
                                 </div>
-                                {validateField("email", emailSchema) && <div className="error">{validateField("email", emailSchema)}</div>}
+                                {emailError && <div className="error">{emailError}</div>}
 
                                 <input 
-                                    type="password" name="email" 
-                                    onChange={e=>setEmail()}
+                                    type="email" name="email" value={email}
+                                    onChange={e=>setSingleInput(e.target, emailSchema, setEmail, setEmailError)}
                                     className="input-md input-primary wp-100" 
                                 />
                             </div>
@@ -335,12 +378,18 @@ export default function ProfilePage() {
                                 <div className="mb-xs">
                                     <b>Password</b>
                                 </div>
-                                <input type="password" name="newPass" className="input-md input-primary wp-100" />
+                                <input 
+                                    type="password" name="newPass" 
+                                    value={pass} onChange={e=>setPass(e.target.value)}
+                                    className="input-md input-primary wp-100" 
+                                />
                             </div>
 
                         </div>
 
-                        <button onClick={handleSavePass} className="input-md btn-primary">Save</button>
+                        <button onClick={updatePass} className="input-md btn-primary">Save</button>
+
+                        <input type="file" onChange={e=>uploadProfileImage(e.target)} multiple/>
                     </div>
                 </div>
             </div>

@@ -97,6 +97,17 @@ export const handleChange = (e, setForm, setErrors = null, fieldSchema = null) =
     }
 };
 
+export function setSingleInput(input, schema, setValue, setError) {
+    const msg = validateField(input.name, input.value, schema);
+    setValue(input.value);
+
+    if(!msg) {
+        setError(null);
+    } else {
+        setError(msg);
+    }
+};
+
 export function isNumeric(value) {
     return !isNaN(parseInt(value));
 }

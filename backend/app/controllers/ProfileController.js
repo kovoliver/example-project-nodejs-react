@@ -8,12 +8,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import Controller from "./Controller.js";
-import { profileSchema, newPassSchema } from "./validation.js";
+import { profileSchema, newPassSchema, emailSchema } from "./validation.js";
 import ProfileModel from "../models/ProfileModel.js";
-import { Get, Patch, RouteController } from "../framework/decorators.js";
+import { Get, Patch, Post, RouteController } from "../framework/decorators.js";
 import tokenHandler from "../framework/JWToken.js";
 import { sanitizeHTTP } from "../framework/functions.js";
 import { validateSchema } from "../framework/functions.js";
+import { uploadErrorHandler, multerErrorHandler, upload } from "../framework/FileHandler.js";
 let ProfileController = class ProfileController extends Controller {
     constructor() {
         super(new ProfileModel());
@@ -50,8 +51,35 @@ let ProfileController = class ProfileController extends Controller {
     async changePassword(req, res) {
         try {
             const userID = req.user.userID;
-            const response = await this.model.changePassword(userID, req.body.pass.trim(), req.body.newPass.trim());
+            const response = await this.model.changePassword(userID, req.body.pass, req.body.newPass);
             return res.status(response.status).json(response);
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+    async changeEmail(req, res) {
+        try {
+            const userID = req.user.userID;
+            const response = await this.model.changeEmail(userID, req.body.email, req.body.pass);
+            return res.status(response.status).json(response);
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+    async uploadProfileImage(req, res) {
+        try {
+            //console.log(req.files);
+            return res.status(200).json({ message: "hey hey" });
         }
         catch (err) {
             console.log(err);
@@ -80,6 +108,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "changePassword", null);
+__decorate([
+    Patch("/update-email", tokenHandler.authenticate.bind(tokenHandler), validateSchema(emailSchema)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "changeEmail", null);
+__decorate([
+    Post("/profile-image", upload.array("profileImage", 10), multerErrorHandler, uploadErrorHandler),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "uploadProfileImage", null);
 ProfileController = __decorate([
     RouteController("/profile"),
     __metadata("design:paramtypes", [])

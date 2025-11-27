@@ -92,10 +92,19 @@ export function sanitizeHTTP(req, res, next) {
     next();
 }
 ;
-export const validateSchema = (schema) => {
+export function trimObject(obj) {
+    for (const [key, value] of Object.entries(obj)) {
+        if (typeof value === "string") {
+            obj[key] = value.trim();
+        }
+    }
+    return obj;
+}
+export const validateSchema = (schema, trim = true) => {
     return (req, res, next) => {
         if (!req.body || !schema)
             return next();
+        req.body = trim ? trimObject(req.body) : req.body;
         const { error } = schema.validate(req.body, { abortEarly: false });
         if (error) {
             return res.status(400).json({ message: error.details.map(e => e.message) });
