@@ -3,6 +3,7 @@ import { TokenPayload } from "./types.js";
 import tokenHandler from "../framework/JWToken.js";
 import { Role } from "@prisma/client";
 import { logger } from "../framework/functions.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class TwoFactorModel extends Model<"twoFactorKey"> {
 
@@ -74,8 +75,11 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
                 }
             });
 
+            const uuID = uuidv4();
+
             const user: TokenPayload = {
                 userID: userID,
+                uuID:uuID,
                 role: keyData.userData?.role as Role,
                 firstName: keyData.userData?.firstName as string,
                 lastName: keyData.userData?.lastName as string

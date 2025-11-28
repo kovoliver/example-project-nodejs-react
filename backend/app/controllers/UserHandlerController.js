@@ -70,9 +70,26 @@ let UserHandlerController = class UserHandlerController extends Controller {
             });
         }
     }
+    async logout(req, res) {
+        try {
+            res.cookie("refresh_token", null, {
+                httpOnly: true,
+                secure: true,
+                sameSite: process.env.NODE_ENV === "development" ? "none" : "lax",
+                maxAge: 0
+            });
+        }
+        catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                status: 500,
+                message: err.message || "Unexpected error during login.",
+            });
+        }
+    }
 };
 __decorate([
-    Post("/register", sanitizeHTTP, validateSchema(userSchema)),
+    Post("/register", sanitizeHTTP, validateSchema(userSchema, "body")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
@@ -89,6 +106,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserHandlerController.prototype, "login", null);
+__decorate([
+    Post("/logout"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserHandlerController.prototype, "logout", null);
 UserHandlerController = __decorate([
     RouteController("/user"),
     __metadata("design:paramtypes", [])

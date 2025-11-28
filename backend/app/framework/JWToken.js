@@ -47,6 +47,7 @@ class JWToken {
             decoded = this.verifyToken(req.cookies.refresh_token, "REFRESH");
             const user = {
                 userID: decoded?.userID,
+                uuID: decoded?.uuID,
                 role: decoded?.role,
                 firstName: decoded?.firstName,
                 lastName: decoded?.lastName

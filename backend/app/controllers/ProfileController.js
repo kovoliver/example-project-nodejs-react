@@ -21,6 +21,9 @@ let ProfileController = class ProfileController extends Controller {
     }
     async getProfile(req, res) {
         try {
+            const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+            const device = req.headers['user-agent'] || 'unknown';
+            console.log(ipAddress, device);
             const user = req.user;
             const response = await this.model.getProfile(user.userID);
             return res.status(200).json({ data: response });
@@ -97,19 +100,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "getProfile", null);
 __decorate([
-    Patch("/update", tokenHandler.authenticate.bind(tokenHandler), sanitizeHTTP, validateSchema(profileSchema)),
+    Patch("/update", tokenHandler.authenticate.bind(tokenHandler), sanitizeHTTP, validateSchema(profileSchema, "body")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "updateProfile", null);
 __decorate([
-    Patch("/update-pass", tokenHandler.authenticate.bind(tokenHandler), validateSchema(newPassSchema)),
+    Patch("/update-pass", tokenHandler.authenticate.bind(tokenHandler), validateSchema(newPassSchema, "body")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "changePassword", null);
 __decorate([
-    Patch("/update-email", tokenHandler.authenticate.bind(tokenHandler), validateSchema(emailSchema)),
+    Patch("/update-email", tokenHandler.authenticate.bind(tokenHandler), validateSchema(emailSchema, "body")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

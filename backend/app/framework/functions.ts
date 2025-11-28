@@ -123,12 +123,12 @@ export function trimObject(obj: Record<string, any>): Record<string, any> {
     return obj;
 }
 
-export const validateSchema = (schema: Joi.ObjectSchema|null, trim:boolean = true) => {
+export const validateSchema = (schema: Joi.ObjectSchema|null, source:"query"|"params"|"body", trim:boolean = true) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        if (!req.body || !schema) return next();
-        req.body = trim ? trimObject(req.body) : req.body;
+        if (!schema) return next();
+        req[source] = trim ? trimObject(req[source]) : req[source];
 
-        const { error } = schema.validate(req.body, { abortEarly: false });
+        const { error } = schema.validate(req[source], { abortEarly: false });
 
         if (error) {
             return res.status(400).json({ message: error.details.map(e => e.message) });

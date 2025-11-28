@@ -4,6 +4,7 @@ import UserHandlerModel from "../models/UserHandlerModel.js";
 import { HTTPResponse } from "../models/types.js";
 import { Get, Post, RouteController } from "../framework/decorators.js";
 import { sanitizeHTTP, validateSchema } from "../framework/functions.js";
+import { Request, Response } from "express";
 
 @RouteController("/user")
 class UserHandlerController extends Controller<UserHandlerModel> {
@@ -11,8 +12,8 @@ class UserHandlerController extends Controller<UserHandlerModel> {
         super(new UserHandlerModel() as UserHandlerModel);
     }
 
-    @Post("/register", sanitizeHTTP, validateSchema(userSchema))
-    public async register(req: any, res: any) {
+    @Post("/register", sanitizeHTTP, validateSchema(userSchema, "body"))
+    public async register(req: Request, res: Response) {
         try {
             const response: HTTPResponse = await this.model.register(req.body);
 
@@ -26,7 +27,7 @@ class UserHandlerController extends Controller<UserHandlerModel> {
     }
 
     @Get("/confirm-registration/:userID/:code")
-    public async confirmRegistration(req: any, res: any) {
+    public async confirmRegistration(req: Request, res: Response) {
         try {
             // A userID és a code jön a query paraméterekből (pl. /user/confirm-registration?userID=12&code=abcd123)
             const { userID, code } = req.params;
@@ -51,7 +52,7 @@ class UserHandlerController extends Controller<UserHandlerModel> {
     }
 
     @Post("/login")
-    public async login(req: any, res: any) {
+    public async login(req: Request, res: Response) {
         try {
             const { email, pass } = req.body;
 
@@ -66,6 +67,26 @@ class UserHandlerController extends Controller<UserHandlerModel> {
             const response: HTTPResponse = await this.model.login(email, pass);
 
             return res.status(response.status).json(response);
+        } catch (err: any) {
+            console.error(err);
+            return res.status(500).json({
+                status: 500,
+                message: err.message || "Unexpected error during login.",
+            });
+        }
+    }
+
+    @Post("/logout")
+    public async logout(req:Request, res:Response) {
+        try {
+            res.cookie("refresh_token", null, {
+                httpOnly: true,
+                secure: true,
+                sameSite: process.env.NODE_ENV === "development" ? "none" : "lax",
+                maxAge: 0
+            });
+
+            
         } catch (err: any) {
             console.error(err);
             return res.status(500).json({

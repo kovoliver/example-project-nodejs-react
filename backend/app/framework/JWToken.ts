@@ -60,6 +60,7 @@ class JWToken {
             
             const user:TokenPayload = {
                 userID:decoded?.userID as number,
+                uuID:decoded?.uuID as string,
                 role:decoded?.role as Role,
                 firstName:decoded?.firstName as string,
                 lastName:decoded?.lastName as string
@@ -83,6 +84,8 @@ class JWToken {
 
         next();
     }
+
+    
 }
 
 const tokenHandler = new JWToken();

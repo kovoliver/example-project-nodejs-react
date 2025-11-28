@@ -18,6 +18,10 @@ class ProfileController extends Controller<ProfileModel> {
     @Get("/get", tokenHandler.authenticate.bind(tokenHandler))
     public async getProfile(req: Request, res: Response) {
         try {
+            const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+            const device = req.headers['user-agent'] || 'unknown';
+            console.log(ipAddress, device);
+            
             const user = (req as any).user as TokenPayload;
 
             const response = await this.model.getProfile(user.userID);
@@ -33,7 +37,7 @@ class ProfileController extends Controller<ProfileModel> {
         }
     }
 
-    @Patch("/update", tokenHandler.authenticate.bind(tokenHandler), sanitizeHTTP, validateSchema(profileSchema))
+    @Patch("/update", tokenHandler.authenticate.bind(tokenHandler), sanitizeHTTP, validateSchema(profileSchema, "body"))
     public async updateProfile(req: Request, res: Response) {
         try {
             const profileData = req.body;
@@ -54,7 +58,7 @@ class ProfileController extends Controller<ProfileModel> {
         }
     }
 
-    @Patch("/update-pass", tokenHandler.authenticate.bind(tokenHandler), validateSchema(newPassSchema))
+    @Patch("/update-pass", tokenHandler.authenticate.bind(tokenHandler), validateSchema(newPassSchema, "body"))
     public async changePassword(req: Request, res: Response) {
         try {
             const userID = (req as any).user.userID;
@@ -74,7 +78,7 @@ class ProfileController extends Controller<ProfileModel> {
         }
     }
 
-    @Patch("/update-email", tokenHandler.authenticate.bind(tokenHandler), validateSchema(emailSchema))
+    @Patch("/update-email", tokenHandler.authenticate.bind(tokenHandler), validateSchema(emailSchema, "body"))
     public async changeEmail(req: Request, res: Response) {
         try {
             const userID = (req as any).user.userID;

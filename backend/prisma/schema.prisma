@@ -69,6 +69,7 @@ model User {
   messagesSent           UserMessage[]         @relation("Sender")
   reportsMade            Report[]              @relation("Reporter")
   twoFactorKeyCreated TwoFactorKey[] @relation("UserKey")
+  sessions  Session[]
   @@map("users")
 }
 
@@ -156,4 +157,18 @@ model TwoFactorKey {
   expiredAt  DateTime @default(dbgenerated("(CURRENT_TIMESTAMP + INTERVAL 5 MINUTE)"))
   userData   User?      @relation("UserKey", fields: [userID], references: [userID], onDelete: Cascade)
   @@map("two_factor_keys")
+}
+
+model Session {
+  sessionID   Int      @id @default(autoincrement())
+  userID      Int
+  token       String   @unique
+  valid       Boolean  @default(true)
+  ipAddress   String? 
+  device      String? 
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  lastUsed    DateTime?
+  user        User     @relation(fields: [userID], references: [userID])
+  @@map("sessions")
 }

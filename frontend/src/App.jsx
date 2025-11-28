@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import GuestLayout from "./layouts/GuestLayout";
 import RegisterPage from "./pages/RegisterPage";
@@ -22,12 +22,22 @@ export const GlobalContext = createContext();
 function App() {
     const [messages, setMsgs] = useState({messages:[], msgCls:"info", maxWidth:500});
     const [token, setToken] = useState(localStorage.getItem("token"));
-    const [sessionInfo, setSessionInfo] = useState(localStorage.getItem("sessionInfo"));
+    const [sessionInfo, setSessionInfo] = useState(JSON.parse(localStorage.getItem("sessionInfo")));
+    const [loggedIn, setLoggedIn] = useState(sessionInfo !== null);
+    const [loginPath, setLoginPath] = useState("/");
 
     const setMessages = (messages, msgCls = "info", maxWidth = 500)=> {
         const msgs = Array.isArray(messages) ? messages : [messages];
         setMsgs({messages:msgs, msgCls, maxWidth});
     };
+
+    useEffect(()=> {
+        if(!sessionInfo) return;
+        setLoggedIn(true);
+
+        const path = "/" + sessionInfo.role.toString().toLowerCase();
+        setLoginPath(path);
+    }, [sessionInfo]);
 
     return (
         <GlobalContext.Provider value={{
@@ -36,7 +46,9 @@ function App() {
             token,
             setToken,
             sessionInfo,
-            setSessionInfo
+            setSessionInfo,
+            loggedIn,
+            loginPath
         }}>
             <BrowserRouter>
                 <Routes>

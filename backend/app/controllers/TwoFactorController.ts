@@ -3,30 +3,20 @@ import { Get, RouteController } from "../framework/decorators.js";
 import TwoFactorModel from "../models/TwoFactorModel.js";
 import Controller from "./Controller.js";
 import { twoFactorKeySchema } from "./validation.js";
-import { defaultValue } from "../framework/functions.js";
+import { defaultValue, validateSchema } from "../framework/functions.js";
 
 @RouteController("/two-factor")
 export class TwoFactorController extends Controller<TwoFactorModel> {
 
     constructor() {
-        super(new TwoFactorModel(), twoFactorKeySchema);
+        super(new TwoFactorModel());
     }
 
-    @Get("/login/:userID/:key")
+    @Get("/login/:userID/:key", validateSchema(twoFactorKeySchema, "query"))
     public async twoFactorLogin(req: Request, res: Response) {
-        if (this.schema === null) {
-            return res.status(503).json({ message: "A szolgáltatás ideiglenesen nem érhető el!" });
-        }
-
         try {
-            const { error, value } = this.schema?.validate(req.params, { abortEarly: false });
-
-            if (error) {
-                return res.status(400).json({ message: error.details });
-            }
-
-            // A twoFactorLogin a modelből visszaadja az access és refresh tokent
-            const response = await this.model.twoFactorLogin(value.userID, value.key);
+            const {userID, key} = req.params;
+            const response = await this.model.twoFactorLogin(parseInt(userID), key);
             const days = parseInt(defaultValue(process.env["REFRESH_TOKEN_DAYS"], 7));
 
             // Beállítjuk a refresh token-t cookie-ba

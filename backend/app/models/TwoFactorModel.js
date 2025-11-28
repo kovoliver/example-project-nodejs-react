@@ -1,6 +1,7 @@
 import Model from "./Model.js";
 import tokenHandler from "../framework/JWToken.js";
 import { logger } from "../framework/functions.js";
+import { v4 as uuidv4 } from 'uuid';
 class TwoFactorModel extends Model {
     constructor() {
         super("twoFactorKey", ["userID", "key"]);
@@ -64,8 +65,10 @@ class TwoFactorModel extends Model {
                     used: true
                 }
             });
+            const uuID = uuidv4();
             const user = {
                 userID: userID,
+                uuID: uuID,
                 role: keyData.userData?.role,
                 firstName: keyData.userData?.firstName,
                 lastName: keyData.userData?.lastName

@@ -100,12 +100,12 @@ export function trimObject(obj) {
     }
     return obj;
 }
-export const validateSchema = (schema, trim = true) => {
+export const validateSchema = (schema, source, trim = true) => {
     return (req, res, next) => {
-        if (!req.body || !schema)
+        if (!schema)
             return next();
-        req.body = trim ? trimObject(req.body) : req.body;
-        const { error } = schema.validate(req.body, { abortEarly: false });
+        req[source] = trim ? trimObject(req[source]) : req[source];
+        const { error } = schema.validate(req[source], { abortEarly: false });
         if (error) {
             return res.status(400).json({ message: error.details.map(e => e.message) });
         }

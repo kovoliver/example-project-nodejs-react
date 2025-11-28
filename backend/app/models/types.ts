@@ -31,8 +31,8 @@ export type RegisterUser = {
     role: Role;
     email: string;
     pass: string;
-    salt:string;
-    confirmationCode:string;
+    salt: string;
+    confirmationCode: string;
 };
 
 export type User = {
@@ -50,7 +50,7 @@ export type User = {
     houseNumber?: string;
     floorNumber?: string;
     doorNumber?: string;
-    salt?:string;
+    salt?: string;
     created?: Date;
     updated?: Date;
 };
@@ -117,14 +117,15 @@ export type Report = {
 };
 
 export type HTTPResponse = {
-    status:number;
-    message:string|string[];
-    insertID?:number;
+    status: number;
+    message: string | string[];
+    insertID?: number;
 };
 
 export type TokenPayload = {
     userID: number;
-    role: "USER"|"ADMIN";
+    uuID:string;
+    role: "USER" | "ADMIN";
     firstName: string;
     lastName: string;
 };
@@ -143,5 +144,17 @@ export type RouteDefinition = {
     method: HTTPMethod;
     path: string;
     handler: string,
-    middlewares?:Function[]
+    middlewares?: Function[]
 }
+
+export type Session = {
+    sessionID: number;
+    userID: number;
+    token: string;
+    valid: boolean;
+    ipAddress?: string | null;
+    device?: string | null;
+    createdAt: Date;
+    expiresAt: Date;
+    lastUsed?: Date | null;
+};
