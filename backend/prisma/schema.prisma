@@ -37,6 +37,11 @@ enum ReportType {
   CAR
 }
 
+enum TokenType {
+  ACCESS
+  REFRESH
+}
+
 // -----------------------------
 // Models
 // -----------------------------
@@ -162,10 +167,14 @@ model TwoFactorKey {
 model Session {
   sessionID   Int      @id @default(autoincrement())
   userID      Int
-  token       String   @unique
+  tokenUUID       String   @unique
+  tokenType TokenType
   valid       Boolean  @default(true)
   ipAddress   String? 
-  device      String? 
+  os  String?
+  browser      String?
+  device  String?
+  cpu String?
   createdAt   DateTime @default(now())
   expiresAt   DateTime
   lastUsed    DateTime?

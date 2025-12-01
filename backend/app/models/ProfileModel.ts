@@ -168,8 +168,6 @@ class ProfileModel extends Model<'user'> {
             };
         }
     }
-
-
 };
 
 export default ProfileModel;

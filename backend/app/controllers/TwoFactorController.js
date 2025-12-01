@@ -19,7 +19,7 @@ export let TwoFactorController = class TwoFactorController extends Controller {
     async twoFactorLogin(req, res) {
         try {
             const { userID, key } = req.params;
-            const response = await this.model.twoFactorLogin(parseInt(userID), key);
+            const response = await this.model.twoFactorLogin(parseInt(userID), key, req.userAgent);
             const days = parseInt(defaultValue(process.env["REFRESH_TOKEN_DAYS"], 7));
             // Beállítjuk a refresh token-t cookie-ba
             res.cookie("refresh_token", response.refreshToken, {
@@ -47,7 +47,7 @@ export let TwoFactorController = class TwoFactorController extends Controller {
     }
 };
 __decorate([
-    Get("/login/:userID/:key", validateSchema(twoFactorKeySchema, "query")),
+    Get("/login/:userID/:key", validateSchema(twoFactorKeySchema, "params")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

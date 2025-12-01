@@ -1,14 +1,16 @@
 import jwt, { Secret } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { TokenPayload } from "../models/types.js";
+import { TokenPayload, UserAgent } from "../models/types.js";
 import { defaultValue } from "./functions.js";
 import { Role } from "@prisma/client";
+import SessionModel from "../models/SessionModel.js";
 
 class JWToken {
     private accessKey: string;
     private refreshKey: string;
     private accessExpire: string;
     private refreshExpire: string;
+    private sessionModel:SessionModel;
 
     constructor() {
         if (!process.env.ACCESS_TOKEN_SECRET) throw new Error("Missing ACCESS_TOKEN_SECRET in .env");
@@ -22,6 +24,8 @@ class JWToken {
 
         this.accessExpire = `${accessMins}m`;
         this.refreshExpire = `${refreshDays}d`;
+
+        this.sessionModel = new SessionModel();
     }
 
     createToken(payload: TokenPayload, type: "ACCESS" | "REFRESH" = "ACCESS"): string {
@@ -39,8 +43,7 @@ class JWToken {
         }
     }
 
-    // Express middleware
-    authenticate(req: Request, res: Response, next: NextFunction) {
+    async authenticate(req: Request, res: Response, next: NextFunction) {
         const authHeader = req.headers['authorization'];
         const token = authHeader?.split(" ")[1] ?? null;
 
@@ -75,6 +78,12 @@ class JWToken {
             return res.status(401).json({ message: 'A rendszer nem tudott azonosítani!' });
         }
 
+        const response = await this.sessionModel.validateSession(decoded.uuID, req.userAgent as UserAgent);
+
+        if(response.status !== 200) {
+            return res.status(response.status).json({ message: response.message });
+        }
+
         // Új access token vissza a headerbe
         if (newAccessToken) {
             res.setHeader('Authorization', `Bearer ${newAccessToken}`);
@@ -84,8 +93,6 @@ class JWToken {
 
         next();
     }
-
-    
 }
 
 const tokenHandler = new JWToken();

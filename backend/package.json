@@ -23,6 +23,7 @@
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
+    "my-ua-parser": "^2.0.4",
     "nodemailer": "^7.0.10",
     "reflect-metadata": "^0.2.2",
     "uuid": "^13.0.0"

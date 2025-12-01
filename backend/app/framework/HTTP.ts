@@ -5,7 +5,7 @@ import https from "https";
 import http from "http";
 import fs from "fs";
 import path from "path";
-import { defaultValue, __dirname } from "./functions.js";
+import { defaultValue, __dirname, userAgentParser } from "./functions.js";
 
 class HTTP {
     public app: Express;
@@ -43,6 +43,7 @@ class HTTP {
         // Body parser
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(userAgentParser);
 
         this.listen();
     }

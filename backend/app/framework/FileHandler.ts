@@ -4,7 +4,6 @@ import fs from 'fs';
 import { Request, Response, NextFunction } from 'express';
 import { defaultValue } from './functions.js'; // Feltételezve, hogy ez elérhető
 
-// TypeScript kiterjesztése a req objektumhoz
 declare global {
     namespace Express {
         interface Request {

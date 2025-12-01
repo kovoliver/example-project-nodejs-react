@@ -1,14 +1,17 @@
 import Model from "./Model.js";
-import { TokenPayload } from "./types.js";
+import { TokenPayload, UserAgent, Session } from "./types.js";
 import tokenHandler from "../framework/JWToken.js";
 import { Role } from "@prisma/client";
-import { logger } from "../framework/functions.js";
+import { getTokenExpiration, logger } from "../framework/functions.js";
 import { v4 as uuidv4 } from 'uuid';
+import SessionModel from "./SessionModel.js";
 
 class TwoFactorModel extends Model<"twoFactorKey"> {
+    private sessionModel:SessionModel;
 
     constructor() {
         super("twoFactorKey", ["userID", "key"]);
+        this.sessionModel = new SessionModel();
     }
 
     async createKey(userID: number, key: string): Promise<void> {
@@ -31,7 +34,7 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
         }
     }
 
-    async twoFactorLogin(userID: number, key: string): Promise<any> {
+    async twoFactorLogin(userID: number, key: string, userAgent:UserAgent): Promise<any> {
         try {
             const keyData = await this.model.findFirst({
                 where: {
@@ -75,11 +78,12 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
                 }
             });
 
-            const uuID = uuidv4();
+            const uuIDAccess = uuidv4();
+            const uuIDRefresh = uuidv4();
 
             const user: TokenPayload = {
                 userID: userID,
-                uuID:uuID,
+                uuID:uuIDAccess,
                 role: keyData.userData?.role as Role,
                 firstName: keyData.userData?.firstName as string,
                 lastName: keyData.userData?.lastName as string
@@ -89,9 +93,41 @@ class TwoFactorModel extends Model<"twoFactorKey"> {
                 user, "ACCESS"
             );
 
+            user.uuID = uuIDRefresh;
+
             const refreshToken = tokenHandler.createToken(
                 user, "REFRESH"
             );
+
+            const expiresAccess = getTokenExpiration("ACCESS");
+            const expiresRefresh = getTokenExpiration("REFRESH");
+
+            const accessSession:Session = {
+                userID:user.userID,
+                tokenUUID:uuIDAccess,
+                tokenType:"ACCESS",
+                ipAddress:userAgent.ipAddress,
+                browser:userAgent.browser,
+                os:userAgent.os,
+                device:userAgent.device,
+                cpu:userAgent.cpu,
+                expiresAt:expiresAccess as Date
+            };
+
+            const refreshSession:Session = {
+                userID:user.userID,
+                tokenUUID:uuIDRefresh,
+                tokenType:"REFRESH",
+                ipAddress:userAgent.ipAddress,
+                browser:userAgent.browser,
+                os:userAgent.os,
+                device:userAgent.device,
+                cpu:userAgent.cpu,
+                expiresAt:expiresRefresh as Date
+            };
+
+            await this.sessionModel.createSession(accessSession);
+            await this.sessionModel.createSession(refreshSession);
 
             return {
                 status: 200,

@@ -148,13 +148,25 @@ export type RouteDefinition = {
 }
 
 export type Session = {
-    sessionID: number;
+    sessionID?: number;
     userID: number;
-    token: string;
-    valid: boolean;
-    ipAddress?: string | null;
-    device?: string | null;
-    createdAt: Date;
+    tokenUUID: string;
+    tokenType:"ACCESS"|"REFRESH";
+    valid?: boolean;
+    ipAddress: string | null;
+    os:string|null;
+    browser:string|null;
+    device: string | null;
+    cpu:string|null;
+    createdAt?: Date;
     expiresAt: Date;
     lastUsed?: Date | null;
+};
+
+export type UserAgent = {
+    os: string|null,
+    browser: string|null,
+    device: string|null,
+    cpu: string|null,
+    ipAddress:string|null
 };

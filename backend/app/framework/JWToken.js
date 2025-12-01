@@ -1,10 +1,12 @@
 import jwt from "jsonwebtoken";
 import { defaultValue } from "./functions.js";
+import SessionModel from "../models/SessionModel.js";
 class JWToken {
     accessKey;
     refreshKey;
     accessExpire;
     refreshExpire;
+    sessionModel;
     constructor() {
         if (!process.env.ACCESS_TOKEN_SECRET)
             throw new Error("Missing ACCESS_TOKEN_SECRET in .env");
@@ -16,6 +18,7 @@ class JWToken {
         const refreshDays = defaultValue(process.env.REFRESH_TOKEN_DAYS, "7");
         this.accessExpire = `${accessMins}m`;
         this.refreshExpire = `${refreshDays}d`;
+        this.sessionModel = new SessionModel();
     }
     createToken(payload, type = "ACCESS") {
         const key = type === "ACCESS" ? this.accessKey : this.refreshKey;
@@ -31,8 +34,7 @@ class JWToken {
             return null;
         }
     }
-    // Express middleware
-    authenticate(req, res, next) {
+    async authenticate(req, res, next) {
         const authHeader = req.headers['authorization'];
         const token = authHeader?.split(" ")[1] ?? null;
         if (!token && !req.cookies?.refresh_token) {
@@ -58,6 +60,10 @@ class JWToken {
         }
         if (!decoded) {
             return res.status(401).json({ message: 'A rendszer nem tudott azonosítani!' });
+        }
+        const response = await this.sessionModel.validateSession(decoded.uuID, req.userAgent);
+        if (response.status !== 200) {
+            return res.status(response.status).json({ message: response.message });
         }
         // Új access token vissza a headerbe
         if (newAccessToken) {

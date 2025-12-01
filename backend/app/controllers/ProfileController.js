@@ -21,9 +21,6 @@ let ProfileController = class ProfileController extends Controller {
     }
     async getProfile(req, res) {
         try {
-            const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'unknown';
-            const device = req.headers['user-agent'] || 'unknown';
-            console.log(ipAddress, device);
             const user = req.user;
             const response = await this.model.getProfile(user.userID);
             return res.status(200).json({ data: response });

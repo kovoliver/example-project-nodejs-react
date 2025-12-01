@@ -1,10 +1,13 @@
 import Model from "./Model.js";
 import tokenHandler from "../framework/JWToken.js";
-import { logger } from "../framework/functions.js";
+import { getTokenExpiration, logger } from "../framework/functions.js";
 import { v4 as uuidv4 } from 'uuid';
+import SessionModel from "./SessionModel.js";
 class TwoFactorModel extends Model {
+    sessionModel;
     constructor() {
         super("twoFactorKey", ["userID", "key"]);
+        this.sessionModel = new SessionModel();
     }
     async createKey(userID, key) {
         try {
@@ -24,7 +27,7 @@ class TwoFactorModel extends Model {
             };
         }
     }
-    async twoFactorLogin(userID, key) {
+    async twoFactorLogin(userID, key, userAgent) {
         try {
             const keyData = await this.model.findFirst({
                 where: {
@@ -65,16 +68,44 @@ class TwoFactorModel extends Model {
                     used: true
                 }
             });
-            const uuID = uuidv4();
+            const uuIDAccess = uuidv4();
+            const uuIDRefresh = uuidv4();
             const user = {
                 userID: userID,
-                uuID: uuID,
+                uuID: uuIDAccess,
                 role: keyData.userData?.role,
                 firstName: keyData.userData?.firstName,
                 lastName: keyData.userData?.lastName
             };
             const accessToken = tokenHandler.createToken(user, "ACCESS");
+            user.uuID = uuIDRefresh;
             const refreshToken = tokenHandler.createToken(user, "REFRESH");
+            const expiresAccess = getTokenExpiration("ACCESS");
+            const expiresRefresh = getTokenExpiration("REFRESH");
+            const accessSession = {
+                userID: user.userID,
+                tokenUUID: uuIDAccess,
+                tokenType: "ACCESS",
+                ipAddress: userAgent.ipAddress,
+                browser: userAgent.browser,
+                os: userAgent.os,
+                device: userAgent.device,
+                cpu: userAgent.cpu,
+                expiresAt: expiresAccess
+            };
+            const refreshSession = {
+                userID: user.userID,
+                tokenUUID: uuIDRefresh,
+                tokenType: "REFRESH",
+                ipAddress: userAgent.ipAddress,
+                browser: userAgent.browser,
+                os: userAgent.os,
+                device: userAgent.device,
+                cpu: userAgent.cpu,
+                expiresAt: expiresRefresh
+            };
+            await this.sessionModel.createSession(accessSession);
+            await this.sessionModel.createSession(refreshSession);
             return {
                 status: 200,
                 accessToken: accessToken,

@@ -18,10 +18,6 @@ class ProfileController extends Controller<ProfileModel> {
     @Get("/get", tokenHandler.authenticate.bind(tokenHandler))
     public async getProfile(req: Request, res: Response) {
         try {
-            const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'unknown';
-            const device = req.headers['user-agent'] || 'unknown';
-            console.log(ipAddress, device);
-            
             const user = (req as any).user as TokenPayload;
 
             const response = await this.model.getProfile(user.userID);
