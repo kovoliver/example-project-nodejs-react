@@ -5,6 +5,14 @@ import { defaultValue } from "./functions.js";
 import { Role } from "@prisma/client";
 import SessionModel from "../models/SessionModel.js";
 
+declare global {
+    namespace Express {
+        interface Request {
+            user:TokenPayload;
+        }
+    }
+}
+
 class JWToken {
     private accessKey: string;
     private refreshKey: string;
@@ -56,6 +64,8 @@ class JWToken {
 
         if (token) {
             decoded = this.verifyToken(token, "ACCESS");
+            req.user = decoded as TokenPayload;
+            return next();
         }
 
         if (!decoded && req.cookies?.refresh_token) {
@@ -89,9 +99,31 @@ class JWToken {
             res.setHeader('Authorization', `Bearer ${newAccessToken}`);
         }
 
-        (req as any).user = decoded;
+        req.user = decoded;
 
         next();
+    }
+
+    async logout(tokenUUID:string, refreshToken:string) {
+        if(!tokenUUID || !refreshToken) {
+            throw {
+                status:401,
+                message:"The system cannot find your session!"
+            }
+        }
+
+        await this.sessionModel.invalidateSessionByUUID(tokenUUID);
+
+        const decoded = this.verifyToken(refreshToken, "REFRESH");
+
+        if(decoded) {
+            await this.sessionModel.invalidateSessionByUUID(decoded.uuID);
+        } else {
+            throw {
+                status:401,
+                message:"You've probably already logged out earlier!"
+            }
+        }
     }
 }
 

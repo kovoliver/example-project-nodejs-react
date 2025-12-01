@@ -75,26 +75,6 @@ class UserHandlerController extends Controller<UserHandlerModel> {
             });
         }
     }
-
-    @Post("/logout")
-    public async logout(req:Request, res:Response) {
-        try {
-            res.cookie("refresh_token", null, {
-                httpOnly: true,
-                secure: true,
-                sameSite: process.env.NODE_ENV === "development" ? "none" : "lax",
-                maxAge: 0
-            });
-
-            
-        } catch (err: any) {
-            console.error(err);
-            return res.status(500).json({
-                status: 500,
-                message: err.message || "Unexpected error during login.",
-            });
-        }
-    }
 }
 
 export default UserHandlerController;

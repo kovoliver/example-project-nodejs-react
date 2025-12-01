@@ -44,6 +44,8 @@ class JWToken {
         let newAccessToken = null;
         if (token) {
             decoded = this.verifyToken(token, "ACCESS");
+            req.user = decoded;
+            return next();
         }
         if (!decoded && req.cookies?.refresh_token) {
             decoded = this.verifyToken(req.cookies.refresh_token, "REFRESH");
@@ -71,6 +73,25 @@ class JWToken {
         }
         req.user = decoded;
         next();
+    }
+    async logout(tokenUUID, refreshToken) {
+        if (!tokenUUID || !refreshToken) {
+            throw {
+                status: 401,
+                message: "The system cannot find your session!"
+            };
+        }
+        await this.sessionModel.invalidateSessionByUUID(tokenUUID);
+        const decoded = this.verifyToken(refreshToken, "REFRESH");
+        if (decoded) {
+            await this.sessionModel.invalidateSessionByUUID(decoded.uuID);
+        }
+        else {
+            throw {
+                status: 401,
+                message: "You've probably already logged out earlier!"
+            };
+        }
     }
 }
 const tokenHandler = new JWToken();

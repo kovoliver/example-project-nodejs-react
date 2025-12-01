@@ -77,6 +77,23 @@ class SessionModel extends Model {
             };
         }
     }
+    async invalidateSessionByUUID(tokenUUID) {
+        try {
+            await this.model.update({
+                where: { tokenUUID },
+                data: { valid: false }
+            });
+        }
+        catch (err) {
+            if (!err.status) {
+                logger(err, "SessionModel", "invalidateSession");
+            }
+            throw {
+                status: 500,
+                message: err.message || "Error invalidating session."
+            };
+        }
+    }
     async validateSession(tokenUUID, userAgent) {
         try {
             const session = await this.model.findUnique({

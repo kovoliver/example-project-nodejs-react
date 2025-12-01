@@ -21,8 +21,7 @@ let ProfileController = class ProfileController extends Controller {
     }
     async getProfile(req, res) {
         try {
-            const user = req.user;
-            const response = await this.model.getProfile(user.userID);
+            const response = await this.model.getProfile(req.user.userID);
             return res.status(200).json({ data: response });
         }
         catch (err) {

@@ -32,10 +32,10 @@ function App() {
     };
 
     useEffect(()=> {
-        if(!sessionInfo) return;
+        if(!sessionInfo || !sessionInfo.role) return;
         setLoggedIn(true);
 
-        const path = "/" + sessionInfo.role.toString().toLowerCase();
+        const path = "/" + sessionInfo?.role.toString().toLowerCase();
         setLoginPath(path);
     }, [sessionInfo]);
 

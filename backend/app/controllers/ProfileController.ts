@@ -18,9 +18,7 @@ class ProfileController extends Controller<ProfileModel> {
     @Get("/get", tokenHandler.authenticate.bind(tokenHandler))
     public async getProfile(req: Request, res: Response) {
         try {
-            const user = (req as any).user as TokenPayload;
-
-            const response = await this.model.getProfile(user.userID);
+            const response = await this.model.getProfile(req.user.userID);
 
             return res.status(200).json({data:response});
         } catch (err: any) {

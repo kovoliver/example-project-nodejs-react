@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import { cBaseUrl } from './url';
 
 export const selectMenu = (path, menu) => {
     return path === menu ? "selected-menu" : "";
@@ -58,6 +59,11 @@ export const fetchAPI = async (path, settings = {}, gc = null) => {
             data: json.data || null
         };
     } catch (err) {
+        console.log(err);
+        if(err.status && [401,403].includes(parseInt(err.status))) {
+            localStorage.clear();
+            location.replace(cBaseUrl);
+        }
         throw err;
     }
 };

@@ -26,7 +26,8 @@ export let TwoFactorController = class TwoFactorController extends Controller {
                 httpOnly: true,
                 secure: true,
                 sameSite: process.env.NODE_ENV === "development" ? "none" : "lax",
-                maxAge: days * 24 * 60 * 60 * 1000
+                maxAge: days * 24 * 60 * 60 * 1000,
+                path: "/"
             });
             // Az access token-t header-ben küldjük
             res.setHeader("Authorization", `Bearer ${response.accessToken}`);
