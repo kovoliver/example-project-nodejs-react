@@ -44,6 +44,8 @@ class JWToken {
         let newAccessToken = null;
         if (token) {
             decoded = this.verifyToken(token, "ACCESS");
+        }
+        if (decoded) {
             req.user = decoded;
             return next();
         }

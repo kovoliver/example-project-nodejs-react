@@ -12,6 +12,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'; 
 import TwoFactorLogin from "./pages/TwoFactorLogin";
 import ProfilePage from "./pages/common/ProfilePage";
+import CarsPage from "./pages/user_pages/CarsPage";
+import CarPage from "./pages/user_pages/CarPage";
 
 library.add(
     faCircleXmark
@@ -63,6 +65,9 @@ function App() {
 
                     <Route element={<UserLayout />}>
                         <Route path="/user/profile" element={<ProfilePage />} />
+                        <Route path="/user/cars" element={<CarsPage />} />
+                        <Route path="/user/car" element={<CarPage />} />
+                        <Route path="/user/car/:carID" element={<CarPage />} />
                     </Route>
 
                     {/* 

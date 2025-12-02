@@ -8,7 +8,7 @@ import SessionModel from "../models/SessionModel.js";
 declare global {
     namespace Express {
         interface Request {
-            user:TokenPayload;
+            user: TokenPayload;
         }
     }
 }
@@ -18,7 +18,7 @@ class JWToken {
     private refreshKey: string;
     private accessExpire: string;
     private refreshExpire: string;
-    private sessionModel:SessionModel;
+    private sessionModel: SessionModel;
 
     constructor() {
         if (!process.env.ACCESS_TOKEN_SECRET) throw new Error("Missing ACCESS_TOKEN_SECRET in .env");
@@ -64,19 +64,22 @@ class JWToken {
 
         if (token) {
             decoded = this.verifyToken(token, "ACCESS");
+        }
+
+        if (decoded) {
             req.user = decoded as TokenPayload;
             return next();
         }
 
         if (!decoded && req.cookies?.refresh_token) {
             decoded = this.verifyToken(req.cookies.refresh_token, "REFRESH");
-            
-            const user:TokenPayload = {
-                userID:decoded?.userID as number,
-                uuID:decoded?.uuID as string,
-                role:decoded?.role as Role,
-                firstName:decoded?.firstName as string,
-                lastName:decoded?.lastName as string
+
+            const user: TokenPayload = {
+                userID: decoded?.userID as number,
+                uuID: decoded?.uuID as string,
+                role: decoded?.role as Role,
+                firstName: decoded?.firstName as string,
+                lastName: decoded?.lastName as string
             };
 
             if (decoded) {
@@ -90,7 +93,7 @@ class JWToken {
 
         const response = await this.sessionModel.validateSession(decoded.uuID, req.userAgent as UserAgent);
 
-        if(response.status !== 200) {
+        if (response.status !== 200) {
             return res.status(response.status).json({ message: response.message });
         }
 
@@ -104,11 +107,11 @@ class JWToken {
         next();
     }
 
-    async logout(tokenUUID:string, refreshToken:string) {
-        if(!tokenUUID || !refreshToken) {
+    async logout(tokenUUID: string, refreshToken: string) {
+        if (!tokenUUID || !refreshToken) {
             throw {
-                status:401,
-                message:"The system cannot find your session!"
+                status: 401,
+                message: "The system cannot find your session!"
             }
         }
 
@@ -116,12 +119,12 @@ class JWToken {
 
         const decoded = this.verifyToken(refreshToken, "REFRESH");
 
-        if(decoded) {
+        if (decoded) {
             await this.sessionModel.invalidateSessionByUUID(decoded.uuID);
         } else {
             throw {
-                status:401,
-                message:"You've probably already logged out earlier!"
+                status: 401,
+                message: "You've probably already logged out earlier!"
             }
         }
     }
@@ -129,5 +132,5 @@ class JWToken {
 
 const tokenHandler = new JWToken();
 
-export {JWToken};
+export { JWToken };
 export default tokenHandler;

@@ -8,6 +8,9 @@ export default function UserNav() {
                 <li className="h-30 d-flex ai-center bg-secondary bg-secondary-lighter-hover cursor-pointer p-sm">
                     <Link className="text-white text-deco-none" to="/user/profile">Profile</Link>
                 </li>
+                <li className="h-30 d-flex ai-center bg-secondary bg-secondary-lighter-hover cursor-pointer p-sm">
+                    <Link className="text-white text-deco-none" to="/user/cars">My cars</Link>
+                </li>
                 <LogoutComp/>
             </ul>
         </div>

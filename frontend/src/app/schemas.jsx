@@ -83,3 +83,29 @@ export const emailSchema = Joi.object({
         "any.required": "Az email cím mezőt kötelező kitölteni",
     })
 });
+
+export const carSchema = Joi.object({
+    carID: Joi.number().integer().optional().messages({
+        "number.base": "The carID field must be a number.",
+        "number.integer": "The carID field must be an integer."
+    }),
+    userID: Joi.number().integer().required().messages({
+        "any.required": "The userID field is required.",
+        "number.base": "The userID field must be a number.",
+        "number.integer": "The userID field must be an integer."
+    }),
+    title: Joi.string().required().messages({
+        "string.base": "The title must be a string."
+    }),
+    make: Joi.string().required().messages({
+        "any.required": "The manufacturer (make) field is required.",
+        "string.base": "The manufacturer (make) must be a string."
+    }),
+    model: Joi.string().required().messages({
+        "any.required": "The model field is required.",
+        "string.base": "The model must be a string."
+    }),
+    description: Joi.string().optional().messages({
+        "string.base": "The description must be a string."
+    })
+});
