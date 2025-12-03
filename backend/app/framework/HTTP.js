@@ -36,6 +36,7 @@ class HTTP {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(userAgentParser);
+        this.app.use('/uploads', express.static(path.resolve(__dirname, './uploads')));
         this.listen();
     }
     addRoute(method, path, ...handlers) {

@@ -53,17 +53,13 @@ export const fetchAPI = async (path, settings = {}, gc = null) => {
             };
         }
 
-        return {
-            status: response.status,
-            message: json?.message || true,
-            data: json.data || null
-        };
+        return json;
     } catch (err) {
         console.log(err);
-        // if(err.status && [401,403].includes(parseInt(err.status))) {
-        //     localStorage.clear();
-        //     location.replace(cBaseUrl);
-        // }
+        if(err.status && [401,403].includes(parseInt(err.status))) {
+            localStorage.clear();
+            location.replace(cBaseUrl);
+        }
         throw err;
     }
 };

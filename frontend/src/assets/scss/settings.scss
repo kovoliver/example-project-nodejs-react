@@ -30,6 +30,7 @@
 @include list-classes("cursor", "cursor", $cursors);
 @include list-classes("text", "text-align", $textAligns);
 @include list-classes("text-deco", "text-decoration", $textDecorations);
+@include list-classes("overflow", "overflow", $overflows);
 
 @include map-classes("radius", "border-radius", $radiuses);
 @include map-classes("shadow", "box-shadow", $shadows);
@@ -64,6 +65,12 @@
         border:1px solid $color;
         background-color:lighten($color, 10%);
         padding:map-get($spacing, "sm");
+    }
+
+    @for $i from 1 through 5 {
+        .border-#{$key}-#{$i} {
+            border:#{$i}px solid $color;
+        }
     }
 }
 

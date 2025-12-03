@@ -57,7 +57,7 @@ class CarController extends Controller<CarModel> {
 
             const response = await this.model.createCar(carData);
 
-            return res.status(response.status).json(response);
+            return res.status(response.status).json({insertID:response.insertID});
         } catch (err: any) {
             console.log(err);
             return res.status(err.status || 500).json({
@@ -89,6 +89,22 @@ class CarController extends Controller<CarModel> {
     // DELETE autó
     @Delete("/delete/:carID", tokenHandler.authenticate.bind(tokenHandler))
     public async deleteCar(req: Request, res: Response) {
+        try {
+            const carID = parseInt(req.params.carID);
+            const response = await this.model.deleteCar(carID);
+
+            return res.status(response.status).json(response);
+        } catch (err: any) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+
+    @Post("/upload-images/:carID")
+    public async uploadImages(req: Request, res: Response) {
         try {
             const carID = parseInt(req.params.carID);
             const response = await this.model.deleteCar(carID);

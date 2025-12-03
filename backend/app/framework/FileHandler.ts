@@ -15,6 +15,7 @@ declare global {
 // 1. A célmappa és méret
 const UPLOAD_DIR = path.resolve(defaultValue(process.env.UPLOAD_DIR, "uploads"));
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
 // 2. Tárolási stratégia (marad)
 const storage = multer.diskStorage({
@@ -54,7 +55,6 @@ export const upload = multer({
             req.uploadErrors = [];
         }
 
-        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.mkv'];
         const extension = path.extname(file.originalname).toLowerCase();
 
         if (!allowedExtensions.includes(extension)) {

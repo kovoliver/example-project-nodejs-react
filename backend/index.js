@@ -5,6 +5,7 @@ import { TwoFactorController } from './app/controllers/TwoFactorController.js';
 import ProfileController from './app/controllers/ProfileController.js';
 import SessionController from './app/controllers/SessionController.js';
 import CarController from './app/controllers/CarController.js';
+import CarImagesController from './app/controllers/CarImagesController.js';
 dotenv.config();
 function main() {
     RouteManager.registerController(UserHandlerController);
@@ -12,5 +13,6 @@ function main() {
     RouteManager.registerController(ProfileController);
     RouteManager.registerController(SessionController);
     RouteManager.registerController(CarController);
+    RouteManager.registerController(CarImagesController);
 }
 main();

@@ -52,7 +52,7 @@ let CarController = class CarController extends Controller {
             const carData = req.body;
             carData.userID = req.user.userID;
             const response = await this.model.createCar(carData);
-            return res.status(response.status).json(response);
+            return res.status(response.status).json({ insertID: response.insertID });
         }
         catch (err) {
             console.log(err);
@@ -80,6 +80,20 @@ let CarController = class CarController extends Controller {
     }
     // DELETE autó
     async deleteCar(req, res) {
+        try {
+            const carID = parseInt(req.params.carID);
+            const response = await this.model.deleteCar(carID);
+            return res.status(response.status).json(response);
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+    async uploadImages(req, res) {
         try {
             const carID = parseInt(req.params.carID);
             const response = await this.model.deleteCar(carID);
@@ -124,6 +138,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], CarController.prototype, "deleteCar", null);
+__decorate([
+    Post("/upload-images/:carID"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], CarController.prototype, "uploadImages", null);
 CarController = __decorate([
     RouteController("/car"),
     __metadata("design:paramtypes", [])

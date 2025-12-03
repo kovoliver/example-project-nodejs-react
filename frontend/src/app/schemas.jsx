@@ -89,11 +89,6 @@ export const carSchema = Joi.object({
         "number.base": "The carID field must be a number.",
         "number.integer": "The carID field must be an integer."
     }),
-    userID: Joi.number().integer().required().messages({
-        "any.required": "The userID field is required.",
-        "number.base": "The userID field must be a number.",
-        "number.integer": "The userID field must be an integer."
-    }),
     title: Joi.string().required().messages({
         "string.base": "The title must be a string."
     }),

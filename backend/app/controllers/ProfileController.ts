@@ -4,7 +4,6 @@ import { profileSchema, newPassSchema, emailSchema } from "./validation.js";
 import ProfileModel from "../models/ProfileModel.js";
 import { Get, Patch, Post, RouteController } from "../framework/decorators.js";
 import tokenHandler from "../framework/JWToken.js";
-import { TokenPayload } from "../models/types.js";
 import { sanitizeHTTP } from "../framework/functions.js";
 import { validateSchema } from "../framework/functions.js";
 import { uploadErrorHandler, multerErrorHandler, upload } from "../framework/FileHandler.js";

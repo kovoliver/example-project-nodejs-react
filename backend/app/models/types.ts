@@ -118,7 +118,8 @@ export type Report = {
 
 export type HTTPResponse = {
     status: number;
-    message: string | string[];
+    message?: string | string[];
+    data?:string[]|object|Record<string,any>
     insertID?: number;
 };
 

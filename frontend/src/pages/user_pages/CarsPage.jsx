@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { fetchAPI } from "../../app/functions";
-import { sBaseUrl } from "../../app/url";
+import { fileBaseUrl, sBaseUrl } from "../../app/url";
 import { GlobalContext } from "../../App";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -14,7 +14,7 @@ export default function CarsPage() {
         try {
             const response = await fetchAPI(`${sBaseUrl}/car/user`, {
                 method: "GET",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
                     "authorization": `Bearer ${gc.token}`,
                 },
@@ -35,9 +35,9 @@ export default function CarsPage() {
         if (!window.confirm("Are you sure you want to delete this car?")) return;
 
         try {
-            const response = await fetchAPI(`${sBaseUrl}/cars/${carID}`, {
+            const response = await fetchAPI(`${sBaseUrl}/car/delete/${carID}`, {
                 method: "DELETE",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
                     "authorization": `Bearer ${gc.token}`,
                 },
@@ -53,9 +53,11 @@ export default function CarsPage() {
         <div className="maxw-1200 margin-auto px-md py-md">
             <h1 className="mb-lg">My Cars</h1>
 
-            <Link to="/user/car">
-                <button className="input-md btn-primary">Create car</button>
-            </Link>
+            <div className="mb-xl">
+                <Link to="/user/car">
+                    <button className="input-md btn-primary">Create car</button>
+                </Link>
+            </div>
 
             {cars.length === 0 ? (
                 <p>No cars found.</p>
@@ -63,10 +65,10 @@ export default function CarsPage() {
                 <div className="row">
                     {cars.map((car) => (
                         <div key={car.carID} className="col-md-4 mb-lg">
-                            <div className="box-light radius-md shadow-md p-md d-flex flex-column">
+                            <div className="box-light radius-md shadow-md p-md d-flex fd-column">
                                 {car.mainImage ? (
                                     <img
-                                        src={car.mainImage}
+                                        src={`${fileBaseUrl}/uploads/${car.mainImage}`}
                                         alt={car.title || car.model}
                                         className="wp-100 radius-sm mb-sm"
                                         style={{ height: "200px", objectFit: "cover" }}
@@ -83,7 +85,7 @@ export default function CarsPage() {
                                 <div className="d-flex jc-space-between">
                                     <button
                                         className="btn-primary input-sm"
-                                        onClick={() => navigate(`/cars/${car.carID}`)}
+                                        onClick={() => navigate(`/user/car/${car.carID}`)}
                                     >
                                         Open
                                     </button>

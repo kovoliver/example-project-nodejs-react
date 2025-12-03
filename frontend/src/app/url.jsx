@@ -5,5 +5,6 @@ const clientPost = host === "localhost" ? ":5173" : "";
 
 let sBaseUrl = protocol + host + serverPort + "/api";
 let cBaseUrl = protocol + host + clientPost;
+let fileBaseUrl = protocol + host + serverPort;
 
-export {sBaseUrl, cBaseUrl};
+export {sBaseUrl, cBaseUrl, fileBaseUrl};

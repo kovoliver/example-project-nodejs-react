@@ -133,7 +133,11 @@ export async function logger(msg: any, cls: string, method: string) {
 
         if (typeof msg === 'object') {
             for (const keyValue of Object.entries(msg)) {
-                msgStr += `${keyValue[0]}:${keyValue[1]}\n`;
+                if(typeof keyValue[1] === "object") {
+                    msgStr += `${keyValue[0]}:${JSON.stringify(keyValue[1])}\n`;
+                } else {
+                    msgStr += `${keyValue[0]}:${keyValue[1]}\n`;
+                }
             }
         } else {
             msgStr += msg;
