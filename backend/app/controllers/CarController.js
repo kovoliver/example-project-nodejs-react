@@ -107,6 +107,38 @@ let CarController = class CarController extends Controller {
             });
         }
     }
+    async getAllMakesAndModels(req, res) {
+        try {
+            const makesAndModels = await this.model.getAllMakesAndModels();
+            return res.status(200).json({ data: makesAndModels });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+    // 2. Endpoint autók keresésére make, model, és description keyword alapján
+    async searchCars(req, res) {
+        try {
+            const { make, model, keyword } = req.query;
+            const cars = await this.model.searchCars({
+                make,
+                model,
+                keyword
+            });
+            return res.status(200).json({ cars });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
 };
 __decorate([
     Get("/get/:carID", tokenHandler.authenticate.bind(tokenHandler)),
@@ -144,6 +176,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], CarController.prototype, "uploadImages", null);
+__decorate([
+    Get("/makes-models"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], CarController.prototype, "getAllMakesAndModels", null);
+__decorate([
+    Get("/search"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], CarController.prototype, "searchCars", null);
 CarController = __decorate([
     RouteController("/car"),
     __metadata("design:paramtypes", [])

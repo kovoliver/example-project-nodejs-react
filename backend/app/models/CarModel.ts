@@ -38,7 +38,7 @@ class CarModel extends Model<"car"> {
     // READ - egy autó lekérdezése ID alapján a fő képpel, ha van
     async getCar(carID: number, userID: number): Promise<Car & { mainImage?: string | null }> {
         try {
-            const car:any = await this.model.findUnique({
+            const car: any = await this.model.findUnique({
                 where: { carID, userID },
                 include: {
                     images: {
@@ -68,7 +68,7 @@ class CarModel extends Model<"car"> {
     // READ - felhasználóhoz tartozó autók a fő képpel, de ha nincs kép, akkor is visszaadja az autót
     async getCarsByUser(userID: number): Promise<(Car & { mainImage?: string | null })[]> {
         try {
-            const cars:any = await this.model.findMany({
+            const cars: any = await this.model.findMany({
                 where: { userID },
                 include: {
                     images: {
@@ -79,7 +79,7 @@ class CarModel extends Model<"car"> {
                 }
             });
 
-            return cars.map((car:any) => {
+            return cars.map((car: any) => {
                 const mainImage = car.images[0]?.path ?? null;
                 const { images, ...rest } = car;
                 return { ...rest, mainImage };
@@ -138,6 +138,73 @@ class CarModel extends Model<"car"> {
             throw {
                 status: err.status || 500,
                 message: err.message || "Error deleting car."
+            };
+        }
+    }
+
+    async getAllMakesAndModels(): Promise<{ makes: string[]; models: string[] }> {
+        try {
+            // Egyedi make-ek lekérése
+            const makesData = await this.model.findMany({
+                select: { make: true },
+                distinct: ["make"]
+            });
+            const makes = makesData.map(m => m.make);
+
+            // Egyedi model-ek lekérése
+            const modelsData = await this.model.findMany({
+                select: { model: true },
+                distinct: ["model"]
+            });
+            const models = modelsData.map(m => m.model);
+
+            return { makes, models };
+        } catch (err: any) {
+            logger(err, "CarModel", "getAllMakesAndModels");
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error retrieving makes and models."
+            };
+        }
+    }
+
+
+    // 2. Keresés autókra make, model és description alapján
+    async searchCars(params: {
+        make?: string;
+        model?: string;
+        keyword?: string;
+    }): Promise<(Car & { mainImage?: string | null })[]> {
+        try {
+            const { make, model, keyword } = params;
+
+            const cars: any = await this.model.findMany({
+                where: {
+                    AND: [
+                        make ? { make: { contains: make } } : {},
+                        model ? { model: { contains: model } } : {},
+                        keyword ? { description: { contains: keyword } } : {}
+                    ]
+                },
+                include: {
+                    images: {
+                        where: { isMain: true },
+                        select: { path: true },
+                        take: 1
+                    }
+                }
+            });
+
+            return cars.map((car: any) => {
+                const mainImage = car.images[0]?.path ?? null;
+                const { images, ...rest } = car;
+                return { ...rest, mainImage };
+            });
+        } catch (err: any) {
+            logger(err, "CarModel", "searchCars");
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error searching cars."
             };
         }
     }

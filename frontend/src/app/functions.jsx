@@ -57,8 +57,8 @@ export const fetchAPI = async (path, settings = {}, gc = null) => {
     } catch (err) {
         console.log(err);
         if(err.status && [401,403].includes(parseInt(err.status))) {
-            localStorage.clear();
-            location.replace(cBaseUrl);
+            // localStorage.clear();
+            // location.replace(cBaseUrl);
         }
         throw err;
     }

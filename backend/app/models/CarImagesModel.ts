@@ -1,3 +1,4 @@
+import { deleteImage } from "../framework/FileHandler.js";
 import { logger } from "../framework/functions.js";
 import Model from "./Model.js";
 import { HTTPResponse } from "./types.js";
@@ -13,35 +14,30 @@ class CarImagesModel extends Model<"carImage"> {
     public async storeImages(carID: number, files: Express.Multer.File[]): Promise<HTTPResponse> {
         try {
             if (!files || files.length === 0) {
-                throw {
-                    status: 400,
-                    message: "You haven't attached any files!"
-                };
+                throw { status: 400, message: "You haven't attached any files!" };
             }
 
-            // 1️⃣ Ellenőrizzük, hogy van-e már isMain kép az adott autónál
             const existingMain = await this.model.findFirst({
                 where: { carID, isMain: true }
             });
 
-            // 2️⃣ Ha van fő kép, akkor minden új kép isMain = false
-            // Ha nincs, akkor az első új kép legyen isMain
-            const imagesData = files.map((file, idx) => ({
-                carID,
-                path: file.filename,
-                extension: file.filename.split('.').pop() || '',
-                isMain: existingMain ? false : idx === 0
-            }));
-
-            // 3️⃣ Mentés az adatbázisba
-            const stored = await this.model.createMany({
-                data: imagesData
-            });
+            const storedImages = await Promise.all(
+                files.map((file, idx) =>
+                    this.model.create({
+                        data: {
+                            carID,
+                            path: file.filename,
+                            extension: file.filename.split('.').pop() || '',
+                            isMain: existingMain ? false : idx === 0
+                        }
+                    })
+                )
+            );
 
             return {
                 status: 200,
                 message: "Uploaded successfully!",
-                data: stored
+                data: storedImages
             };
 
         } catch (err: any) {
@@ -84,7 +80,7 @@ class CarImagesModel extends Model<"carImage"> {
         } catch (err: any) {
             logger(err, "CarImagesModel", "updateMainImage");
 
-            if(err.name && err.name === 'PrismaClientKnownRequestError') {
+            if (err.name && err.name === 'PrismaClientKnownRequestError') {
                 throw {
                     status: 400,
                     message: "The image doesn't exist, or you don't have permission to modify it!"
@@ -108,10 +104,6 @@ class CarImagesModel extends Model<"carImage"> {
                 orderBy: { isMain: 'desc' }
             });
 
-            if (images.length === 0) {
-                throw { status: 404, message: "Car not found or access denied." };
-            }
-
             return {
                 status: 200,
                 data: images
@@ -127,10 +119,45 @@ class CarImagesModel extends Model<"carImage"> {
         }
     }
 
-    public async deleteImage(imageID:number, userID:number) {
+    public async getImageByID(imageID:number) {
         try {
+            const response = await this.model.findFirst({
+                where:{imageID}
+            });
+
+            if(!response) {
+                throw {
+                    status:404,
+                    message:"The image is not found!"
+                }
+            }
+
+            return response;
+        } catch (err: any) {
+            logger(err, "CarImagesModel", "getImagesByCar");
+
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error retrieving images."
+            };
+        }
+    }
+
+    public async deleteImage(imageID: number, userID: number) {
+        try {
+            const img = await this.getImageByID(imageID);
+            const path = `uploads/${img.path}`;
+            const deleted = await deleteImage(path);
+
+            if(!deleted) {
+                throw {
+                    status:503,
+                    message:"The system could not delet the file!"
+                }
+            }
+
             const response = await this.model.delete({
-                where:{imageID, car:{userID}}
+                where: { imageID, car: { userID } }
             });
 
             if (!response) {
@@ -138,6 +165,11 @@ class CarImagesModel extends Model<"carImage"> {
                     status: 400,
                     message: "The image doesn't exist, or you don't have permission to delete it!"
                 }
+            }
+
+            return {
+                status:200,
+                message:"Successfully deleted!"
             }
         } catch (err: any) {
             logger(err, "CarImagesModel", "deleteImage");

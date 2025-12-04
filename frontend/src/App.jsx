@@ -14,6 +14,7 @@ import TwoFactorLogin from "./pages/TwoFactorLogin";
 import ProfilePage from "./pages/common/ProfilePage";
 import CarsPage from "./pages/user_pages/CarsPage";
 import CarPage from "./pages/user_pages/CarPage";
+import SearchPage from "./pages/SearchPage";
 
 library.add(
     faCircleXmark
@@ -61,6 +62,7 @@ function App() {
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/confirm-registration" element={<ConfirmRegistration />} />
                         <Route path="/two-factor-login/:userID/:key" element={<TwoFactorLogin />} />
+                        <Route path="/search" element={<SearchPage/>}/>
                     </Route>
 
                     <Route element={<UserLayout />}>

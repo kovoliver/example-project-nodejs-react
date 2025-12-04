@@ -1,16 +1,17 @@
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
-import { defaultValue } from './functions.js'; // Feltételezve, hogy ez elérhető
+import fs from 'fs/promises';
+import { existsSync } from 'fs';
+import { defaultValue, logger } from './functions.js'; // Feltételezve, hogy ez elérhető
 // 1. A célmappa és méret
 const UPLOAD_DIR = path.resolve(defaultValue(process.env.UPLOAD_DIR, "uploads"));
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 // 2. Tárolási stratégia (marad)
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        if (!fs.existsSync(UPLOAD_DIR)) {
-            fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    destination: async (req, file, cb) => {
+        if (!existsSync(UPLOAD_DIR)) {
+            await fs.mkdir(UPLOAD_DIR, { recursive: true });
         }
         cb(null, UPLOAD_DIR);
     },
@@ -21,18 +22,21 @@ const storage = multer.diskStorage({
         cb(null, newFileName);
     }
 });
-// A GLOBÁLIS "uploadErrors" TÖRÖLVE!
-// Segédfüggvény (marad)
-const cleanupFiles = (paths) => {
-    if (!paths)
+export async function deleteImage(filePath) {
+    try {
+        await fs.unlink(filePath);
+        return true;
+    }
+    catch (err) {
+        logger(err, "FileHandler.ts", "deleteImage");
+        return false;
+    }
+}
+export async function cleanupFiles(paths) {
+    if (!paths || paths.length === 0)
         return;
-    paths.forEach(path => {
-        fs.unlink(path, (err) => {
-            if (err)
-                console.error(`Error deleting file: ${path}`, err);
-        });
-    });
-};
+    await Promise.all(paths.map(p => deleteImage(p)));
+}
 // 3. Multer konfiguráció: Típus ellenőrzés és Hiba GYŰJTÉS a req-en
 export const upload = multer({
     storage: storage,

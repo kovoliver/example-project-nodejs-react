@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Get, Patch, Post, RouteController } from "../framework/decorators.js";
+import { Delete, Get, Patch, Post, RouteController } from "../framework/decorators.js";
 import { multerErrorHandler, upload, uploadErrorHandler } from "../framework/FileHandler.js";
 import tokenHandler from "../framework/JWToken.js";
 import CarImagesModel from "../models/CarImagesModel.js";
@@ -60,6 +60,20 @@ let CarImagesController = class CarImagesController extends Controller {
             });
         }
     }
+    async deleteImage(req, res) {
+        try {
+            const imageID = parseInt(req.params.imageID || "0");
+            const response = await this.model.deleteImage(imageID, req.user.userID);
+            res.status(response.status).json({ message: response.message });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
 };
 __decorate([
     Post("/upload/:carID", tokenHandler.authenticate.bind(tokenHandler), upload.array("car_images", 10), multerErrorHandler, uploadErrorHandler),
@@ -79,6 +93,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], CarImagesController.prototype, "getImagesByCar", null);
+__decorate([
+    Delete("/delete/:imageID", tokenHandler.authenticate.bind(tokenHandler)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], CarImagesController.prototype, "deleteImage", null);
 CarImagesController = __decorate([
     RouteController("/car_images"),
     __metadata("design:paramtypes", [])

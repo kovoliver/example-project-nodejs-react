@@ -99,15 +99,10 @@ export default function CarPage() {
         }
     };
 
-    // --- KÉP KIVÁLASZTÁSA ---
     const handleImageChange = (e) => {
         setMainImage(e.target.files[0]);
     };
 
-    // --- KÉP FELTÖLTÉS ---
-    
-
-    // --- RENDER ---
     return (
         <div>
             <ImagesComponent

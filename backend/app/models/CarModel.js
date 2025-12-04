@@ -130,5 +130,63 @@ class CarModel extends Model {
             };
         }
     }
+    async getAllMakesAndModels() {
+        try {
+            // Egyedi make-ek lekérése
+            const makesData = await this.model.findMany({
+                select: { make: true },
+                distinct: ["make"]
+            });
+            const makes = makesData.map(m => m.make);
+            // Egyedi model-ek lekérése
+            const modelsData = await this.model.findMany({
+                select: { model: true },
+                distinct: ["model"]
+            });
+            const models = modelsData.map(m => m.model);
+            return { makes, models };
+        }
+        catch (err) {
+            logger(err, "CarModel", "getAllMakesAndModels");
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error retrieving makes and models."
+            };
+        }
+    }
+    // 2. Keresés autókra make, model és description alapján
+    async searchCars(params) {
+        try {
+            const { make, model, keyword } = params;
+            const cars = await this.model.findMany({
+                where: {
+                    AND: [
+                        make ? { make: { contains: make } } : {},
+                        model ? { model: { contains: model } } : {},
+                        keyword ? { description: { contains: keyword } } : {}
+                    ]
+                },
+                include: {
+                    images: {
+                        where: { isMain: true },
+                        select: { path: true },
+                        take: 1
+                    }
+                }
+            });
+            return cars.map((car) => {
+                const mainImage = car.images[0]?.path ?? null;
+                const { images, ...rest } = car;
+                return { ...rest, mainImage };
+            });
+        }
+        catch (err) {
+            logger(err, "CarModel", "searchCars");
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error searching cars."
+            };
+        }
+    }
 }
 export default CarModel;

@@ -1,4 +1,4 @@
-import { Get, Patch, Post, RouteController } from "../framework/decorators.js";
+import { Delete, Get, Patch, Post, RouteController } from "../framework/decorators.js";
 import { multerErrorHandler, upload, uploadErrorHandler } from "../framework/FileHandler.js";
 import tokenHandler from "../framework/JWToken.js";
 import CarImagesModel from "../models/CarImagesModel.js";
@@ -58,6 +58,25 @@ class CarImagesController extends Controller<CarImagesModel> {
             const response = await this.model.getImagesByCar(carID, userID);
 
             return res.status(200).json({ images: response.data });
+        } catch (err: any) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+
+    @Delete("/delete/:imageID", tokenHandler.authenticate.bind(tokenHandler))
+    public async deleteImage(req: Request, res: Response) {
+        try {
+            const imageID = parseInt(req.params.imageID||"0");
+
+            const response = await this.model.deleteImage(
+                imageID, req.user.userID
+            );
+
+            res.status(response.status).json({message:response.message});
         } catch (err: any) {
             console.log(err);
             return res.status(err.status || 500).json({

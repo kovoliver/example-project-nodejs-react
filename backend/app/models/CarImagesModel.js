@@ -1,3 +1,4 @@
+import { deleteImage } from "../framework/FileHandler.js";
 import { logger } from "../framework/functions.js";
 import Model from "./Model.js";
 class CarImagesModel extends Model {
@@ -10,31 +11,23 @@ class CarImagesModel extends Model {
     async storeImages(carID, files) {
         try {
             if (!files || files.length === 0) {
-                throw {
-                    status: 400,
-                    message: "You haven't attached any files!"
-                };
+                throw { status: 400, message: "You haven't attached any files!" };
             }
-            // 1️⃣ Ellenőrizzük, hogy van-e már isMain kép az adott autónál
             const existingMain = await this.model.findFirst({
                 where: { carID, isMain: true }
             });
-            // 2️⃣ Ha van fő kép, akkor minden új kép isMain = false
-            // Ha nincs, akkor az első új kép legyen isMain
-            const imagesData = files.map((file, idx) => ({
-                carID,
-                path: file.filename,
-                extension: file.filename.split('.').pop() || '',
-                isMain: existingMain ? false : idx === 0
-            }));
-            // 3️⃣ Mentés az adatbázisba
-            const stored = await this.model.createMany({
-                data: imagesData
-            });
+            const storedImages = await Promise.all(files.map((file, idx) => this.model.create({
+                data: {
+                    carID,
+                    path: file.filename,
+                    extension: file.filename.split('.').pop() || '',
+                    isMain: existingMain ? false : idx === 0
+                }
+            })));
             return {
                 status: 200,
                 message: "Uploaded successfully!",
-                data: stored
+                data: storedImages
             };
         }
         catch (err) {
@@ -92,9 +85,6 @@ class CarImagesModel extends Model {
                 },
                 orderBy: { isMain: 'desc' }
             });
-            if (images.length === 0) {
-                throw { status: 404, message: "Car not found or access denied." };
-            }
             return {
                 status: 200,
                 data: images
@@ -108,8 +98,38 @@ class CarImagesModel extends Model {
             };
         }
     }
+    async getImageByID(imageID) {
+        try {
+            const response = await this.model.findFirst({
+                where: { imageID }
+            });
+            if (!response) {
+                throw {
+                    status: 404,
+                    message: "The image is not found!"
+                };
+            }
+            return response;
+        }
+        catch (err) {
+            logger(err, "CarImagesModel", "getImagesByCar");
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error retrieving images."
+            };
+        }
+    }
     async deleteImage(imageID, userID) {
         try {
+            const img = await this.getImageByID(imageID);
+            const path = `uploads/${img.path}`;
+            const deleted = await deleteImage(path);
+            if (!deleted) {
+                throw {
+                    status: 503,
+                    message: "The system could not delet the file!"
+                };
+            }
             const response = await this.model.delete({
                 where: { imageID, car: { userID } }
             });
@@ -119,6 +139,10 @@ class CarImagesModel extends Model {
                     message: "The image doesn't exist, or you don't have permission to delete it!"
                 };
             }
+            return {
+                status: 200,
+                message: "Successfully deleted!"
+            };
         }
         catch (err) {
             logger(err, "CarImagesModel", "deleteImage");

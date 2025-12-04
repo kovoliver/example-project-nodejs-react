@@ -36,12 +36,13 @@ export default function ImagesComponent({ carID }) {
                 headers: {
                     "authorization": `Bearer ${gc.token}`
                 },
-                credentials:"include",
+                credentials: "include",
                 body: form
             });
 
             gc.setMessages(res.message, "success");
 
+            setImages([...images, ...res.images]);
             e.target.value = "";
         } catch (err) {
             gc.setMessages(err.message || "Error uploading image!", "error");
@@ -49,7 +50,7 @@ export default function ImagesComponent({ carID }) {
     };
 
     const updateMainImg = async (imageID) => {
-        if(!carID) return;
+        if (!carID) return;
 
         try {
             const res = await fetchAPI(`${sBaseUrl}/car_images/set-main/${imageID}/${carID}`, {
@@ -57,17 +58,41 @@ export default function ImagesComponent({ carID }) {
                 headers: {
                     "authorization": `Bearer ${gc.token}`
                 },
-                credentials:"include"
+                credentials: "include"
             });
 
             gc.setMessages(res.message, "success");
+
+            setImages(prev => prev.map(img => ({
+                ...img,
+                isMain: img.imageID === imageID
+            })).sort((a, b) => b.isMain - a.isMain)); // a fő kép kerüljön előre
         } catch (err) {
             gc.setMessages(err.message || "Error uploading image!", "error");
         }
     };
 
-    const deleteImage = async () => {
-        
+    const deleteImage = async (imageID) => {
+        if (!carID) return;
+
+        if (!window.confirm("Are you sure you want to delete this image?")) return;
+
+        try {
+            const res = await fetchAPI(`${sBaseUrl}/car_images/delete/${imageID}`, {
+                method: "DELETE",
+                headers: {
+                    "authorization": `Bearer ${gc.token}`
+                },
+                credentials: "include"
+            });
+
+            gc.setMessages(res.message, "success");
+
+            // Memóriából is töröljük
+            setImages(prev => prev.filter(img => img.imageID !== imageID));
+        } catch (err) {
+            gc.setMessages(err.message || "Error deleting image!", "error");
+        }
     };
 
     useEffect(() => {
@@ -84,7 +109,7 @@ export default function ImagesComponent({ carID }) {
                 {
                     images.map(img =>
                         <div className="col-lg-3 col-md-3 col-sm-6 p-sm p">
-                            <div className={"radius-md h-200 p-relative mb-sm overflow-hidden " 
+                            <div className={"radius-md h-200 p-relative mb-sm overflow-hidden "
                                 + (img.isMain ? 'border-secondary-3' : 'border-dark-3')}>
                                 <img
                                     src={`${fileBaseUrl}/uploads/${img.path}`}
@@ -94,13 +119,13 @@ export default function ImagesComponent({ carID }) {
                             </div>
 
                             <div className="d-flex jc-space-evenly">
-                                <button onClick={()=>deleteImage(img.imageID)}
-                                className="input-sm btn-error text-white">
+                                <button onClick={() => deleteImage(img.imageID)}
+                                    className="input-sm btn-error text-white">
                                     Delete
                                 </button>
 
-                                <button onClick={()=>updateMainImg(img.imageID)}
-                                className="input-sm btn-success">
+                                <button onClick={() => updateMainImg(img.imageID)}
+                                    className="input-sm btn-success">
                                     Main
                                 </button>
                             </div>

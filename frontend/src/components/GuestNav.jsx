@@ -28,6 +28,11 @@ export default function GuestNav() {
                         <Link className="p-md text-white" to={gc.loginPath + "/profile"}>Profile</Link>
                     </li>
                 }
+
+                <li className={"h-80 d-flex ai-center bg-primary-lighter-hover " 
+                    + selectMenu(location.pathname, "/search")}>
+                    <Link className="p-md text-white" to="/search">Cars</Link>
+                </li>
             </ul>
         </nav>
     );

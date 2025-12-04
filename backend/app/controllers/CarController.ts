@@ -118,6 +118,42 @@ class CarController extends Controller<CarModel> {
             });
         }
     }
+
+    @Get("/makes-models")
+    public async getAllMakesAndModels(req: Request, res: Response) {
+        try {
+            const makesAndModels = await this.model.getAllMakesAndModels();
+            return res.status(200).json({ data: makesAndModels });
+        } catch (err: any) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+
+    // 2. Endpoint autók keresésére make, model, és description keyword alapján
+    @Get("/search")
+    public async searchCars(req: Request, res: Response) {
+        try {
+            const { make, model, keyword } = req.query as any;
+
+            const cars = await this.model.searchCars({
+                make,
+                model,
+                keyword
+            });
+
+            return res.status(200).json({cars});
+        } catch (err: any) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
 }
 
 export default CarController;
