@@ -31,6 +31,24 @@ class CarController extends Controller<CarModel> {
         }
     }
 
+    @Get("/get-public/:carID")
+    public async getCarPublic(req: Request, res: Response) {
+        try {
+            const carID = parseInt(req.params.carID);
+            const response = await this.model.getCarPublic(
+                carID
+            );
+
+            return res.status(200).json({ data: response });
+        } catch (err: any) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
+
     // GET az adott felhasználó autói
     @Get("/user", tokenHandler.authenticate.bind(tokenHandler))
     public async getCarsByUser(req: Request, res: Response) {

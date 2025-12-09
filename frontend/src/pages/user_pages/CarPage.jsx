@@ -89,7 +89,7 @@ export default function CarPage() {
                 body: JSON.stringify(formData)
             });
 
-            gc.setMessages(res.message, "success");
+            //gc.setMessages(res.message, "success");
 
             if (!carID) {
                 navigate(`/user/car/${res.insertID}`);
@@ -99,15 +99,14 @@ export default function CarPage() {
         }
     };
 
-    const handleImageChange = (e) => {
-        setMainImage(e.target.files[0]);
-    };
-
     return (
         <div>
-            <ImagesComponent
-                carID={carID}
-            />
+            {
+                carID && 
+                <ImagesComponent
+                    carID={carID}
+                />
+            }
 
             <div className="maxw-600 margin-auto px-md py-md box-light radius-md shadow-md">
                 <h1 className="mb-lg">{carID ? "Update Car" : "Add New Car"}</h1>

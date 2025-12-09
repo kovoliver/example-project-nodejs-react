@@ -31,6 +31,20 @@ let CarController = class CarController extends Controller {
             });
         }
     }
+    async getCarPublic(req, res) {
+        try {
+            const carID = parseInt(req.params.carID);
+            const response = await this.model.getCarPublic(carID);
+            return res.status(200).json({ data: response });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(err.status || 500).json({
+                status: err.status || 500,
+                message: err.message || "Unexpected error"
+            });
+        }
+    }
     // GET az adott felhasználó autói
     async getCarsByUser(req, res) {
         try {
@@ -146,6 +160,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], CarController.prototype, "getCar", null);
+__decorate([
+    Get("/get-public/:carID"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], CarController.prototype, "getCarPublic", null);
 __decorate([
     Get("/user", tokenHandler.authenticate.bind(tokenHandler)),
     __metadata("design:type", Function),

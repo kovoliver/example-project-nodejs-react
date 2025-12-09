@@ -44,6 +44,7 @@
 @include loop-classes("hp", height, 5, 100, 5, '%');
 @include loop-classes("w", width, 5, 1000, 5, px);
 @include loop-classes("h", height, 5, 1000, 5, px);
+@include loop-classes("lh", line-height, 5, 1000, 5, px);
 @include loop-classes("minw", min-width, 5, 500, 5, px);
 @include loop-classes("minh", min-height, 5, 1000, 5, px);
 @include loop-classes("minwp", min-width, 5, 100, 5, "%");
@@ -62,20 +63,40 @@
 
 @each $key, $color in $colors {
     .box-#{$key} {
-        border:1px solid $color;
-        background-color:lighten($color, 10%);
-        padding:map-get($spacing, "sm");
+        border: 1px solid $color;
+        background-color: lighten($color, 10%);
+        padding: map-get($spacing, "sm");
     }
 
+    // Összes oldal egyszerre
     @for $i from 1 through 5 {
         .border-#{$key}-#{$i} {
-            border:#{$i}px solid $color;
+            border: #{$i}px solid $color;
+        }
+    }
+
+    // Külön minden oldalra
+    @for $i from 1 through 5 {
+        .border-top-#{$key}-#{$i} {
+            border-top: #{$i}px solid $color;
+        }
+
+        .border-right-#{$key}-#{$i} {
+            border-right: #{$i}px solid $color;
+        }
+
+        .border-bottom-#{$key}-#{$i} {
+            border-bottom: #{$i}px solid $color;
+        }
+
+        .border-left-#{$key}-#{$i} {
+            border-left: #{$i}px solid $color;
         }
     }
 }
 
 .margin-auto {
-    margin:auto;
+    margin: auto;
 }
 
 @each $key, $value in $breakpoints {

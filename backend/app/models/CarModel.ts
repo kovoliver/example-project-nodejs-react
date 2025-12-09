@@ -65,6 +65,35 @@ class CarModel extends Model<"car"> {
         }
     }
 
+    async getCarPublic(carID: number): Promise<Car & { mainImage?: string | null }> {
+        try {
+            const car: any = await this.model.findUnique({
+                where: { carID },
+                include: {
+                    images: {
+                        where: { isMain: true },
+                        select: { path: true }, // vagy 'url', ha a mező neve így van
+                        take: 1
+                    }
+                }
+            });
+
+            if (!car) {
+                throw { status: 404, message: "Car not found." };
+            }
+
+            const mainImage = car.images[0]?.path ?? null;
+            const { images, ...rest } = car;
+            return { ...rest, mainImage };
+        } catch (err: any) {
+            if (!err.status) logger(err, "CarModel", "getCar");
+            throw {
+                status: err.status || 500,
+                message: err.message || "Error retrieving car."
+            };
+        }
+    }
+
     // READ - felhasználóhoz tartozó autók a fő képpel, de ha nincs kép, akkor is visszaadja az autót
     async getCarsByUser(userID: number): Promise<(Car & { mainImage?: string | null })[]> {
         try {
