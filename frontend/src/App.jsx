@@ -9,7 +9,7 @@ import HomePage from "./pages/HomePage";
 import "./assets/scss/style.scss";
 import ConfirmRegistration from "./pages/ConfirmRegistration";
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'; 
+import { faCircleXmark, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'; 
 import TwoFactorLogin from "./pages/TwoFactorLogin";
 import ProfilePage from "./pages/common/ProfilePage";
 import CarsPage from "./pages/user_pages/CarsPage";
@@ -18,7 +18,9 @@ import SearchPage from "./pages/SearchPage";
 import CarPublicPage from "./pages/CarPublicPage";
 
 library.add(
-    faCircleXmark
+    faCircleXmark, 
+    faChevronLeft,
+    faChevronRight
 );
 
 export const GlobalContext = createContext();

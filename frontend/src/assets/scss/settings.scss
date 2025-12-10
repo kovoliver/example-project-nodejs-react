@@ -99,6 +99,10 @@
     margin: auto;
 }
 
+.border-table div, .border-table p {
+    margin:0 -1px -1px 0;
+}
+
 @each $key, $value in $breakpoints {
     .container-#{$key} {
         width: 100%;

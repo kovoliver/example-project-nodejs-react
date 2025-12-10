@@ -177,18 +177,6 @@ export default function CarPage() {
                             />
                         </div>
 
-                        {/* MAIN IMAGE */}
-                        <div className="mb-sm">
-                            {mainImage && typeof mainImage === "string" && (
-                                <img
-                                    src={`${fileBaseUrl}/uploads/${mainImage}`}
-                                    alt="Car"
-                                    className="wp-100 mt-sm radius-sm"
-                                    style={{ height: "200px", objectFit: "cover" }}
-                                />
-                            )}
-                        </div>
-
                         <button className="btn-secondary input-md mt-md">
                             {carID ? "Update Car" : "Add Car"}
                         </button>

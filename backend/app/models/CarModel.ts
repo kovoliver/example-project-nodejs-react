@@ -71,9 +71,7 @@ class CarModel extends Model<"car"> {
                 where: { carID },
                 include: {
                     images: {
-                        where: { isMain: true },
-                        select: { path: true }, // vagy 'url', ha a mező neve így van
-                        take: 1
+                        select: { path: true, isMain:true }
                     }
                 }
             });
@@ -82,9 +80,7 @@ class CarModel extends Model<"car"> {
                 throw { status: 404, message: "Car not found." };
             }
 
-            const mainImage = car.images[0]?.path ?? null;
-            const { images, ...rest } = car;
-            return { ...rest, mainImage };
+            return car;
         } catch (err: any) {
             if (!err.status) logger(err, "CarModel", "getCar");
             throw {

@@ -112,7 +112,7 @@ export default function ImagesComponent({ carID }) {
                             <div className={"radius-md h-200 p-relative mb-sm overflow-hidden "
                                 + (img.isMain ? 'border-secondary-3' : 'border-dark-3')}>
                                 <img
-                                    src={`${fileBaseUrl}/uploads/${img.path}`}
+                                    src={`${fileBaseUrl}/${img.path}`}
                                     className="radius-sm mb-sm"
                                     style={{ height: "200px", width: "100%", objectFit: "cover" }}
                                 />
@@ -124,7 +124,8 @@ export default function ImagesComponent({ carID }) {
                                     Delete
                                 </button>
 
-                                <button onClick={() => updateMainImg(img.imageID)}
+                                <button style={{display:img.isMain ? "none" : "block"}} 
+                                onClick={() => updateMainImg(img.imageID)}
                                     className="input-sm btn-success">
                                     Main
                                 </button>

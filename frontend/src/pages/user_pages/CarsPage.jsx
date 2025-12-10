@@ -68,7 +68,7 @@ export default function CarsPage() {
                             <div className="box-light radius-md shadow-md p-md d-flex fd-column">
                                 {car.mainImage ? (
                                     <img
-                                        src={`${fileBaseUrl}/uploads/${car.mainImage}`}
+                                        src={`${fileBaseUrl}/${car.mainImage}`}
                                         alt={car.title || car.model}
                                         className="wp-100 radius-sm mb-sm"
                                         style={{ height: "200px", objectFit: "cover" }}

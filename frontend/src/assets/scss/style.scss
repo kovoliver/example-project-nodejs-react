@@ -54,3 +54,98 @@ nav a {
         grid-template-columns: 205px auto;
     }
 }
+
+
+.img-counter {
+    background-color: #fffc;
+    border-radius: 4px;
+    bottom: 15px;
+    display: flex;
+    justify-content: space-evenly;
+    left: 0;
+    margin: auto;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+}
+
+.point {
+    background-color: #484848b3;
+    border-radius: 13px;
+    cursor: pointer;
+    height: 13px;
+    width: 13px;
+}
+
+.width-80-percentage {
+    width: 80%;
+
+    @media screen and (max-width:800px) {
+        width: 100%;
+    }
+}
+
+@keyframes setToCurrentForward {
+    from {
+        left: -100%;
+    }
+
+    to {
+        left: 0px;
+    }
+}
+
+@keyframes setToPreviousForward {
+    from {
+        left: 0px;
+    }
+
+    to {
+        left: 100%;
+    }
+}
+
+@keyframes setToCurrentBackward {
+    from {
+        left: 100%;
+    }
+
+    to {
+        left: 0px;
+    }
+}
+
+@keyframes setToPreviousBackward {
+    from {
+        left: 0px;
+    }
+
+    to {
+        left: -100%;
+    }
+}
+
+.current-image-forward {
+    animation-name: setToCurrentForward;
+    animation-duration: 0.9s;
+    left: 0;
+}
+
+.prev-image-forward {
+    animation-name: setToPreviousForward;
+    animation-duration: 0.9s;
+    left: 100%;
+}
+
+.current-image-backward {
+    animation-name: setToCurrentBackward;
+    animation-duration: 0.9s;
+    left: 0;
+}
+
+.prev-image-backward {
+    animation-name: setToPreviousBackward;
+    animation-duration: 0.9s;
+    left: -100%;
+}

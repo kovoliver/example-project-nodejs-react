@@ -97,7 +97,7 @@ export default function SearchPage() {
                                 {car.mainImage ? (
                                     <Link to={`/car/${car.make}-${car.model}-${car.carID}`}>
                                         <img
-                                            src={`${fileBaseUrl}/uploads/${car.mainImage}`}
+                                            src={`${fileBaseUrl}/${car.mainImage}`}
                                             alt={car.title || car.model}
                                             className="wp-100 radius-sm mb-sm"
                                             style={{ height: "200px", objectFit: "cover" }}

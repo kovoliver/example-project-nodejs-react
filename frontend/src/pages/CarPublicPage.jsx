@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { fetchAPI } from "../app/functions";
 import { GlobalContext } from "../App";
 import { sBaseUrl } from "../app/url";
+import SlideShow from "../components/SlideShow";
 
 export default function CarPublicPage() {
     const {carUrlData} = useParams();
@@ -29,7 +30,7 @@ export default function CarPublicPage() {
                 `${sBaseUrl}/car/get-public/${carID}`
             );
 
-            //setCarData();
+            setCarData(res.data);
         } catch(err) {
             gc.setMessages(err.message || "Error getting cars!", "error");
         }
@@ -40,8 +41,37 @@ export default function CarPublicPage() {
     }, [carID]);
 
     return(
-        <div>
+        <div className="row text-center">
+            <div className="col-lg-6 col-md-6 p-sm">
+                <div className="box-light">
+                    {
+                        carData?.images 
+                        &&
+                        <SlideShow
+                            images={carData?.images}
+                        />
+                    }
+                </div>
+            </div>
+            <div className="col-lg-6 col-md-6 p-sm">
+                <div className="box-light">
+                    <h3>{carData?.title}</h3>
 
+                    <div className="row border-table">
+                        <div className="box-mid p-sm col-xs-6 color-white">
+                            {carData?.make}
+                        </div>
+
+                        <div className="box-mid p-sm col-xs-6 color-white">
+                            {carData?.model}
+                        </div>
+                    </div>
+
+                    <div className="box-white p-sm">
+                        {carData?.description}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
